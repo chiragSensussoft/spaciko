@@ -50,7 +50,12 @@ class _CompassScreenState extends State<CompassScreen> {
                     GeoCoord(21.1702, 72.8311),
                   )
                 },
-
+                initialZoom: 12,
+                initialPosition:
+                GeoCoord(21.1702, 72.8311),
+                mapType: MapType.roadmap,
+                interactive: true,
+                onTap: (coord) {}
             ),
           ],
         ),
