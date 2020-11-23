@@ -52,7 +52,7 @@ class _CompassScreenState extends State<CompassScreen> {
                 },
                 initialZoom: 12,
                 initialPosition:
-                GeoCoord(21.1702, 72.8311), // Los Angeles, CA
+                GeoCoord(21.1702, 72.8311),
                 mapType: MapType.roadmap,
                 interactive: true,
                 onTap: (coord) {}
