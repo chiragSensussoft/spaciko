@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_maps/flutter_google_maps.dart';
+import 'package:spaciko/Filter/buttonFilter.dart';
 import 'package:spaciko/choice_chip_widget.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
@@ -20,6 +21,11 @@ class _CompassScreenState extends State<CompassScreen> {
   List<String> _selectedTextList = List();
 
   List<String> allTextList1;
+  List<Widget> _objectList = <Widget>[
+    new Text('test'),
+    new Text('test')
+  ];
+
 
   @override
   void initState() {
@@ -57,10 +63,31 @@ class _CompassScreenState extends State<CompassScreen> {
     );
     return choices;
   }
+  void _addOne() {
+    setState(() {
+      _objectList = List.from(_objectList)
+        ..add(Text("foo"));
+    });
+  }
+
+  void _removeOne() {
+    setState(() {
+      _objectList = List.from(_objectList)..removeLast();
+    });
+  }
 
 
+
+  bool val = true;
+  final List<String> entries = <String>['A', 'B', 'C','D'];
+  final List<int> colorCodes = <int>[600,400, 500, 100];
+  List<String> _list =List();
   @override
   Widget build(BuildContext context) {
+    var clr1 = Colors.black;
+    var clr2 = Colors.amber;
+    var clr3 = Colors.blue;
+    var clr4 = Colors.cyanAccent;
     var screenSize = MediaQuery.of(context).size;
     return new Scaffold(
       appBar: PreferredSize(
@@ -68,7 +95,8 @@ class _CompassScreenState extends State<CompassScreen> {
           child: Container(
               child: Column(
                   children: <Widget>[
-                    Container(padding: const EdgeInsets.fromLTRB(5, 0, 5,0),
+                    Container(margin: const EdgeInsets.fromLTRB(5, 5, 5,0),
+                      height: 50,
                       child: Material(
                         elevation: 2,
                         child: TextField(
@@ -92,23 +120,83 @@ class _CompassScreenState extends State<CompassScreen> {
                 ),
           ),
       ),
-      body: Stack(
-        children: <Widget>[
-          GoogleMap(
-              markers: {
-                Marker(
-                  GeoCoord(21.1702, 72.8311),
-                )
-              },
-              initialZoom: 12,
-              initialPosition:
-              GeoCoord(21.1702, 72.8311),
-              mapType: MapType.roadmap,
-              interactive: true,
-              onTap: (coord) {}
+
+      body: Container(
+        height: 50,
+          child:ListView(
+            scrollDirection: Axis.horizontal,
+            children: <Widget>[
+              Container(
+                width: MediaQuery.of(context).size.width/4,
+                color: val?clr1:Colors.cyanAccent,
+                child: GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      val= false;
+                    });
+
+                  },
+                ),
+                margin: const EdgeInsets.only(right: 4),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width/4,
+                color: clr2??Colors.black,
+                margin: const EdgeInsets.only(right: 4),
+                child: GestureDetector(
+                  onTap: (){
+                    setState(() {
+
+                    });
+                  },
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width/4,
+                color: clr3,
+                margin: const EdgeInsets.only(right: 4),
+                child: GestureDetector(
+                  onTap: (){
+                    setState(() {
+
+                    });
+                  },
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width/4,
+                color: clr4,
+                margin: const EdgeInsets.only(right: 4),
+                child: GestureDetector(
+                  onTap: (){
+                    setState(() {
+
+                    });
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+
+
+    // Stack(
+    //     children: <Widget>[
+    //       GoogleMap(
+    //           markers: {
+    //             Marker(
+    //               GeoCoord(21.1702, 72.8311),
+    //             )
+    //           },
+    //           initialZoom: 12,
+    //           initialPosition:
+    //           GeoCoord(21.1702, 72.8311),
+    //           mapType: MapType.roadmap,
+    //           interactive: true,
+    //           onTap: (coord) {}
+    //       ),
+    //     ],
+    //   ),
+      )
     );
     }
 }

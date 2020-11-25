@@ -20,7 +20,7 @@ class ButtonFilter extends StatefulWidget {
 List<String> buttonItem = ['Hourly','Daily','Monthly','Property Type'];
 List<String> splashList =[];
 var toast = Toast();
-Color clr;
+Color clr = Colors.blue;
 
 class _ButtonFilterState extends State<ButtonFilter> {
   // var buttonFilter =   ListView.builder(

@@ -23,6 +23,9 @@ class ChoicechipWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10)
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: ChoiceChip(
         shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(10)),
