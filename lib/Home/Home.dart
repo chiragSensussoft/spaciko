@@ -61,6 +61,7 @@ class _MyHomeState extends State<MyHome> {
        ) : null,
     );
   }
+
   List<Widget> _widgetTransition = [
     Container(
       child: CompassScreen(),

@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spaciko/widgets/Pelette.dart';
+import 'package:spaciko/widgets/Toast.dart';
+
+import '../choice_chip_widget.dart';
 
 class ButtonFilter extends StatefulWidget {
   final Function(int) onChange;
@@ -13,58 +16,71 @@ class ButtonFilter extends StatefulWidget {
   @override
   _ButtonFilterState createState() => _ButtonFilterState();
 }
+
 List<String> buttonItem = ['Hourly','Daily','Monthly','Property Type'];
+List<String> splashList =[];
+var toast = Toast();
+Color clr;
 
 class _ButtonFilterState extends State<ButtonFilter> {
-  var buttonFilter =   ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: buttonItem.length,
+  // var buttonFilter =   ListView.builder(
+  //     scrollDirection: Axis.horizontal,
+  //     itemCount: buttonItem.length,
+  //
+  //     itemBuilder: (BuildContext context, int index) {
+  //       return Column(
+  //         children: [
+  //           FlatButton(
+  //                 height: 40,
+  //                 minWidth: MediaQuery.of(context).size.width/4,
+  //                 padding: const EdgeInsets.only(left: 10),
+  //                 color: clr,
+  //                 child: Center(child: Text(buttonItem[index],style: TextStyle(fontSize: 13,color: Colors.white,fontWeight: FontWeight.w500),)),
+  //               ),
+  //           ],
+  //       );
+  //     }
+  // );
+  List<String> butonsText = List();
+  List<String> buttonItem = ['Hourly','Daily','Monthly','Property Type'];
 
-      itemBuilder: (BuildContext context, int index) {
-        return Column(
-            children: [
-              Container(margin: const EdgeInsets.only(left: 4,top: 5),
-                height: 40,
-                width: MediaQuery.of(context).size.width/4.09,
-                decoration: BoxDecoration(
-                    color: Pelette.ColorPrimaryDark,
-                    borderRadius: BorderRadius.circular(10)
-                ),
-                child: Center(child: Text(buttonItem[index],style: TextStyle(fontSize: 13,color: Colors.white),)),
-              ),
-            ],
-        );
-      }
-  );
-  List<Widget> rowElements = [];
+  List<String> _selectedTextList = List();
+  List<String> allTextList1;
 
-  List<Widget> generateRowElements() {
-    rowElements.clear();
-    for (int i = 0; i < buttonItem.length; i++) {
-      Widget elementTile = InkWell(
-        onTap: () {
-          widget.onChange(i);
-        },
-        child: Text(
-          buttonItem[i],
-          style: TextStyle(
+  @override
+  void initState() {
+    _selectedTextList = buttonItem != null
+        ? List.from(buttonItem)
+        : [];
+    super.initState();
+  }
+  List<Widget> _buildChoiceList(List<String> list) {
+    List<Widget> choices = List();
+    list.forEach(
+          (item) {
+        var selectedText = butonsText.contains(item);
+        choices.add(
+          ChoicechipWidget(
+            onSelected: (value) {
+              setState(
+                    () {
+                  selectedText
+                      ? butonsText.remove(item)
+                      : butonsText.add(item);
+                },
+              );
+            },
+            selected: selectedText,
+            selectedTextColor: Pelette.ColorWhite,
+            selectedTextBackgroundColor: Pelette.ColorPrimaryDark,
+            unselectedTextBackgroundColor: Pelette.ColorWhite,
+            unselectedTextColor: Pelette.ColorPrimaryDark,
+            text: item,
           ),
-        ),
-      );
-      Widget spacer = SizedBox(
-        height: 25,
-        child: VerticalDivider(
-          width: 1,
-          color: Colors.blueGrey[100],
-          thickness: 1,
-        ),
-      );
-      rowElements.add(elementTile);
-      if (i < buttonItem.length - 1) {
-        rowElements.add(spacer);
-      }
-    }
-    return rowElements;
+        );
+      },
+    );
+    return choices;
   }
   @override
   Widget build(BuildContext context) {
@@ -83,9 +99,6 @@ class _ButtonFilterState extends State<ButtonFilter> {
                 ),
               )
             ),
-      body: Container(
-        child: buttonFilter,
-      ),
-    );
+      );
   }
 }
