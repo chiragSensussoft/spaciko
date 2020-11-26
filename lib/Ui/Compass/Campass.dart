@@ -8,6 +8,7 @@ import 'package:spaciko/choice_chip_widget.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
 
+
 class CompassScreen extends StatefulWidget {
   @override
   _CompassScreenState createState() => _CompassScreenState();
@@ -76,29 +77,31 @@ class _CompassScreenState extends State<CompassScreen> {
     });
   }
 
-
-
-  bool val = true;
-  final List<String> entries = <String>['A', 'B', 'C','D'];
-  final List<int> colorCodes = <int>[600,400, 500, 100];
-  List<String> _list =List();
+  List<String> propList = [];
+  int select=-1;
+  List<String> numbers = ['Hourly','Daily','Monthly','Property Type'];
   @override
   Widget build(BuildContext context) {
-    var clr1 = Colors.black;
-    var clr2 = Colors.amber;
-    var clr3 = Colors.blue;
-    var clr4 = Colors.cyanAccent;
+
+
     var screenSize = MediaQuery.of(context).size;
     return new Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(110),
           child: Container(
+
               child: Column(
                   children: <Widget>[
-                    Container(margin: const EdgeInsets.fromLTRB(5, 5, 5,0),
+                    Container(margin: const EdgeInsets.fromLTRB(7, 5, 7,0),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              width: 0.1,
+                            color: Colors.black12
+                          )
+                      ),
                       height: 50,
                       child: Material(
-                        elevation: 2,
+                        elevation: 1,
                         child: TextField(
                           decoration: InputDecoration(
                               hintText: 'Search View',
@@ -107,96 +110,72 @@ class _CompassScreenState extends State<CompassScreen> {
                         ),
                       ),
                     ),
-                        Container(
-                          padding: EdgeInsets.only(top: 0, bottom: 0, left: 5, right: 5),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Wrap(
-                              children: _buildChoiceList(_selectedTextList),
+                Container( margin: const EdgeInsets.only(top: 8,left: 4,right: 4),
+                  height: 40,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: numbers.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: (){
+                            print(index);
+                            setState((){
+                            });
+
+                            if(propList.contains(index.toString())){
+                              propList.remove(index.toString());
+                              print(propList.toString());
+                            }
+                            else{
+                              propList.add(index.toString());
+                              print(propList.toString());
+                            }
+                          },
+
+                          child: Container(margin: const EdgeInsets.only(right: 4,left: 4),
+                            width: MediaQuery.of(context).size.width /4,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Color(0xff18a499),
+                                    width: 0.8
+                                ),
+                                borderRadius: BorderRadius.circular(5),
+                                color: propList.contains(index.toString())?Color(0xff18a499):Colors.white,
+                              ),
+                              child: Container(
+                                child: Center(child: Text(numbers[index], style: TextStyle(color: propList.contains(index.toString())?Colors.white:Color(0xff18a499), fontSize: 13.0),)),
+                              ),
                             ),
                           ),
-                        ),
-                  ],
+                        );
+                      }),
                 ),
+              ]
+            ),
           ),
       ),
 
       body: Container(
-        height: 50,
-          child:ListView(
-            scrollDirection: Axis.horizontal,
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width/4,
-                color: val?clr1:Colors.cyanAccent,
-                child: GestureDetector(
-                  onTap: (){
-                    setState(() {
-                      val= false;
-                    });
-
-                  },
+         child:
+          Stack(
+              children: <Widget>[
+                GoogleMap(
+                    markers: {
+                      Marker(
+                        GeoCoord(21.1702, 72.8311),
+                      )
+                    },
+                    initialZoom: 12,
+                    initialPosition:
+                    GeoCoord(21.1702, 72.8311),
+                    mapType: MapType.roadmap,
+                    interactive: true,
+                    onTap: (coord) {}
                 ),
-                margin: const EdgeInsets.only(right: 4),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width/4,
-                color: clr2??Colors.black,
-                margin: const EdgeInsets.only(right: 4),
-                child: GestureDetector(
-                  onTap: (){
-                    setState(() {
-
-                    });
-                  },
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width/4,
-                color: clr3,
-                margin: const EdgeInsets.only(right: 4),
-                child: GestureDetector(
-                  onTap: (){
-                    setState(() {
-
-                    });
-                  },
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width/4,
-                color: clr4,
-                margin: const EdgeInsets.only(right: 4),
-                child: GestureDetector(
-                  onTap: (){
-                    setState(() {
-
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-
-
-    // Stack(
-    //     children: <Widget>[
-    //       GoogleMap(
-    //           markers: {
-    //             Marker(
-    //               GeoCoord(21.1702, 72.8311),
-    //             )
-    //           },
-    //           initialZoom: 12,
-    //           initialPosition:
-    //           GeoCoord(21.1702, 72.8311),
-    //           mapType: MapType.roadmap,
-    //           interactive: true,
-    //           onTap: (coord) {}
-    //       ),
-    //     ],
-    //   ),
-      )
+              ],
+            ),
+            )
     );
     }
 }
