@@ -3,9 +3,6 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_maps/flutter_google_maps.dart';
-import 'package:spaciko/Filter/buttonFilter.dart';
-import 'package:spaciko/choice_chip_widget.dart';
-import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
 
 
@@ -19,72 +16,10 @@ class _CompassScreenState extends State<CompassScreen> {
   List<String> butonsText = List();
   List<String> buttonItem = ['Hourly','Daily','Monthly','Property Type'];
 
-  List<String> _selectedTextList = List();
-
-  List<String> allTextList1;
-  List<Widget> _objectList = <Widget>[
-    new Text('test'),
-    new Text('test')
-  ];
-
-
-  @override
-  void initState() {
-    _selectedTextList = buttonItem != null
-        ? List.from(buttonItem)
-        : [];
-
-    super.initState();
-  }
-  List<Widget> _buildChoiceList(List<String> list) {
-    List<Widget> choices = List();
-    list.forEach(
-          (item) {
-        var selectedText = butonsText.contains(item);
-        choices.add(
-          ChoicechipWidget(
-            onSelected: (value) {
-              setState(
-                    () {
-                  selectedText
-                      ? butonsText.remove(item)
-                      : butonsText.add(item);
-                },
-              );
-            },
-            selected: selectedText,
-            selectedTextColor: Pelette.ColorWhite,
-            selectedTextBackgroundColor: Pelette.ColorPrimaryDark,
-            unselectedTextBackgroundColor: Pelette.ColorWhite,
-            unselectedTextColor: Pelette.ColorPrimaryDark,
-            text: item,
-          ),
-        );
-      },
-    );
-    return choices;
-  }
-  void _addOne() {
-    setState(() {
-      _objectList = List.from(_objectList)
-        ..add(Text("foo"));
-    });
-  }
-
-  void _removeOne() {
-    setState(() {
-      _objectList = List.from(_objectList)..removeLast();
-    });
-  }
-
   List<String> propList = [];
-  int select=-1;
   List<String> numbers = ['Hourly','Daily','Monthly','Property Type'];
   @override
   Widget build(BuildContext context) {
-
-
-    var screenSize = MediaQuery.of(context).size;
     return new Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(110),
@@ -118,18 +53,14 @@ class _CompassScreenState extends State<CompassScreen> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: (){
-                            print(index);
                             setState((){
+                              if(propList.contains(index.toString())){
+                                propList.remove(index.toString());
+                              }
+                              else{
+                                propList.add(index.toString());
+                              }
                             });
-
-                            if(propList.contains(index.toString())){
-                              propList.remove(index.toString());
-                              print(propList.toString());
-                            }
-                            else{
-                              propList.add(index.toString());
-                              print(propList.toString());
-                            }
                           },
 
                           child: Container(margin: const EdgeInsets.only(right: 4,left: 4),
