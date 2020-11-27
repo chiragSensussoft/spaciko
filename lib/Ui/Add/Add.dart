@@ -7,6 +7,7 @@ class Add extends StatelessWidget {
     return MaterialApp(home: AddScreen(),);
   }
 }
+
 class AddScreen extends StatefulWidget {
   @override
   _AddScreenState createState() => _AddScreenState();
@@ -17,9 +18,8 @@ class _AddScreenState extends State<AddScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: Text('Add'),
+        child: Text('Add',style: TextStyle(fontFamily: 'poppins_semibold'),),
       ),
     );
   }
 }
-
