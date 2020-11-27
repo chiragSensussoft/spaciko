@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:spaciko/Ui/Add/Add.dart';
-import 'package:spaciko/Ui/Calender/Calender.dart';
-import 'package:spaciko/Ui/Comment/Comment.dart';
-import 'package:spaciko/Ui/Compass/Campass.dart';
-import 'package:spaciko/Ui/Profile/Profile.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
 
 import '../BottomBar.dart';
 import '../TopBarContent.dart';
 import '../responsive.dart';
+import 'Ui/Add/Add.dart';
+import 'Ui/Calender/Calender.dart';
+import 'Ui/Comment/Comment.dart';
+import 'Ui/Compass/Campass.dart';
+import 'Ui/Profile/Profile.dart';
 
 void main() => runApp(Home());
 

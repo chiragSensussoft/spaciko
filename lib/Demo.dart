@@ -1,73 +1,113 @@
 import 'package:flutter/material.dart';
-import 'package:spaciko/widgets/Pelette.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
+
+SharedPreferences localStorage;
+
+TextEditingController emailController = new TextEditingController();
+TextEditingController pwdController = new TextEditingController();
 
 class MyApp extends StatelessWidget {
-// This widget is the root of your application.
+  static Future init() async {
+    localStorage = await SharedPreferences.getInstance();
+  }
+
   @override
-  Widget build(BuildContext context) => MaterialApp(home: MyList());
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyHome(),
+    );
+  }
 }
 
-class MyList extends StatefulWidget {
-  @override
-  _MyListState createState() => _MyListState();
-}
-
-class _MyListState extends State<MyList> {
-  List<String> propList = [];
-  int select=-1;
-   List<String> numbers = ['Hourly','Daily','Monthly','Property Type'];
+class MyHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('My List'),
-      ),
-      body: Container(
-        height: 50,
-        child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: numbers.length,
-            itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: (){
-              print(index);
-
-              setState((){
-                select=index;
-              });
-
-              if(propList.contains(index.toString())){
-                propList.remove(index.toString());
-                print(propList.toString());
-              }
-              else{
-                propList.add(index.toString());
-                print(propList.toString());
-              }
-            },
-
-            child: Container(margin: const EdgeInsets.only(right: 2),
-              width: MediaQuery.of(context).size.width /4,
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                        color: Color(0xff18a499),
-                        width: 2
+      body: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 200),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Email Id:",
+                      style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                    color: propList.contains(index.toString())?Colors.white:Color(0xff18a499),
-            ),
-                child: Container(
-                  child: Center(child: Text(numbers[index], style: TextStyle(color: propList.contains(index.toString())?Color(0xff18a499):Colors.white, fontSize: 15.0),)),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextField(
+                        controller: emailController,
+                        obscureText: false,
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            fillColor: Color(0xfff3f3f4),
+                            filled: true))
+                  ],
                 ),
               ),
-            ),
-          );
-        }),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Password :",
+                      style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextField(
+                        controller: pwdController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            fillColor: Color(0xfff3f3f4),
+                            filled: true))
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 50),
+              ),
+              RaisedButton(
+                onPressed: save,
+                child: Text('Login'),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 50),
+              ),
+              if (localStorage != null)
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Text("User Logged in!!! ->  Email Id: ${localStorage.get('email')}  Password: ${localStorage.get('password')}",style: TextStyle(fontSize: 20),),
+                ),
+            ],
+          ),
+        ),
       ),
-// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+
+save() async {
+  await MyApp.init();
+  localStorage.setString('email', emailController.text.toString());
+  localStorage.setString('password', pwdController.text.toString());
+
 }

@@ -44,14 +44,16 @@ class _IntroState extends StatelessWidget{
                           child: Text('CREATING HAS NEVER BEEN EASIER',textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.w800,color: Colors.black,fontSize: 17),
                           ),
                         ),
-                        Container(margin: const EdgeInsets.only(top: 20,left: 15,right: 15),
-                          child: RichText(
-                            text: TextSpan(
-                                children: [
-                                  TextSpan(text: 'Spaciko',style: TextStyle(color: Pelette.ColorPrimaryDark,fontSize: 17,fontWeight: FontWeight.w600)),
-                                  TextSpan(text: ',Setting new Standards on leasing a Private Working space!',style: TextStyle(color: Colors.black87,fontSize: 16))
-                                ]
+                        Container(margin: const EdgeInsets.only(top: 20,left: 20,right: 20),
+                          alignment: Alignment.center,
+                          child: Text.rich(
+                            TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(text: 'Spaciko',style: TextStyle(color: Pelette.ColorPrimaryDark,fontSize: 18,fontWeight: FontWeight.w600)),
+                                  TextSpan(text: ',Setting new Standards on leasing a Private Working space!',style: TextStyle(color: Colors.black87,fontSize: 18))
+                                ],
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                         Container(margin: const EdgeInsets.only(top: 10),

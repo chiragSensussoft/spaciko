@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_maps/flutter_google_maps.dart';
+import 'package:spaciko/model/CheckItem.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
 
@@ -69,7 +70,6 @@ class _CompassScreenState extends State<CompassScreen> {
                               }
                             });
                           },
-
                           child: Container(margin: const EdgeInsets.only(right: 4,left: 4),
                             width: MediaQuery.of(context).size.width /4,
                             child: Container(
@@ -127,18 +127,32 @@ class _CompassScreenState extends State<CompassScreen> {
                             childAspectRatio: 4/1,
                             crossAxisCount: 2,
                             children: List.generate(checkList.length, (index) {
-                              return GestureDetector(
-                                child: Container(
-                                    child:
-                                    CheckboxListTile(
-                                      value: checkList[index].isChecked,
-                                      title: Text(checkList[index].item,style: TextStyle(fontSize: 17),),
-                                      controlAffinity: ListTileControlAffinity.leading,
-                                      onChanged: (val){
-                                        itemChange(val, index);
-                                      },
-                                    )
-                                ),
+                              return  GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      checkList[index].isChecked = !checkList[index].isChecked;
+                                    });
+                                  },
+                                  child: Container(margin: const EdgeInsets.only(left: 10),
+                                    child: Row(
+                                      children: [
+                                        checkList[index].isChecked
+                                            ? Icon(
+                                          Icons.check_circle,
+                                          color: Pelette.ColorPrimaryDark,
+                                          size: 25,
+                                        )
+                                            : Icon(
+                                          Icons.circle,
+                                          color: Colors.grey[100],
+                                          size: 25,
+                                        ),
+
+                                        SizedBox(width: 5),
+                                        Text(checkList[index].item),
+                                      ],
+                                    ),
+                                  )
                               );
                             }),
                           ),
@@ -156,10 +170,7 @@ class _CompassScreenState extends State<CompassScreen> {
                                  Text('Reset',style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w500),),
                                  onTap: (){
                                    setState(() {
-                                     // for(int i=0;i<checkList.length;i++){
-                                     //   checkList[i].isChecked=false;
-                                     // }
-                                     checkList;
+                                     checkList.map((e) => e.isChecked=false).toList();
                                    });
                                  },
                                ),
@@ -198,9 +209,3 @@ class _CompassScreenState extends State<CompassScreen> {
    checkItem('Shared Desk Area'),
    checkItem('Shared Room'),
 ];
-
-class checkItem{
-  bool isChecked = false;
-  String item;
-  checkItem(this.item);
-}
