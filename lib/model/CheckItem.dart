@@ -1,5 +1,5 @@
 class checkItem{
-  bool isChecked = false;
+  bool isChecked = true;
   String item;
   checkItem(this.item);
 }

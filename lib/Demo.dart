@@ -1,113 +1,202 @@
+import 'dart:async';
+
+import 'package:google_maps_webservice/places.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math';
 
-void main() {
-  runApp(MyApp());
+const kGoogleApiKey = "AIzaSyCuAkVVciCZDS4dPHPw-slMiEEBrGCvaSM";
+
+GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
+
+main() {
+  runApp(RoutesWidget());
 }
 
-SharedPreferences localStorage;
+final customTheme = ThemeData(
+  primarySwatch: Colors.blue,
+  brightness: Brightness.dark,
+  accentColor: Colors.redAccent,
+  inputDecorationTheme: InputDecorationTheme(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(4.00)),
+    ),
+    contentPadding: EdgeInsets.symmetric(
+      vertical: 12.50,
+      horizontal: 10.00,
+    ),
+  ),
+);
 
-TextEditingController emailController = new TextEditingController();
-TextEditingController pwdController = new TextEditingController();
-
-class MyApp extends StatelessWidget {
-  static Future init() async {
-    localStorage = await SharedPreferences.getInstance();
-  }
-
+class RoutesWidget extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MyHome(),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+    title: "My App",
+    theme: customTheme,
+    routes: {
+      "/": (_) => MyApp(),
+      "/search": (_) => CustomSearchScaffold(),
+    },
+  );
 }
 
-class MyHome extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+final homeScaffoldKey = GlobalKey<ScaffoldState>();
+final searchScaffoldKey = GlobalKey<ScaffoldState>();
+
+class _MyAppState extends State<MyApp> {
+  Mode _mode = Mode.overlay;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Center(
+      key: homeScaffoldKey,
+      appBar: AppBar(
+        title: Text("My App"),
+      ),
+      body: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(top: 200),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Email Id:",
-                      style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextField(
-                        controller: emailController,
-                        obscureText: false,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true))
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Password :",
-                      style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextField(
-                        controller: pwdController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            fillColor: Color(0xfff3f3f4),
-                            filled: true))
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 50),
+              _buildDropdownMenu(),
+              RaisedButton(
+                onPressed: _handlePressButton,
+                child: Text("Search places"),
               ),
               RaisedButton(
-                onPressed: save,
-                child: Text('Login'),
+                child: Text("Custom"),
+                onPressed: () {
+                  Navigator.of(context).pushNamed("/search");
+                },
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 50),
-              ),
-              if (localStorage != null)
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Text("User Logged in!!! ->  Email Id: ${localStorage.get('email')}  Password: ${localStorage.get('password')}",style: TextStyle(fontSize: 20),),
-                ),
             ],
-          ),
-        ),
+          )),
+    );
+  }
+
+  Widget _buildDropdownMenu() => DropdownButton(
+    value: _mode,
+    items: <DropdownMenuItem<Mode>>[
+      DropdownMenuItem<Mode>(
+        child: Text("Overlay"),
+        value: Mode.overlay,
       ),
+      DropdownMenuItem<Mode>(
+        child: Text("Fullscreen"),
+        value: Mode.fullscreen,
+      ),
+    ],
+    onChanged: (m) {
+      setState(() {
+        _mode = m;
+      });
+    },
+  );
+
+  void onError(PlacesAutocompleteResponse response) {
+    homeScaffoldKey.currentState.showSnackBar(
+      SnackBar(content: Text(response.errorMessage)),
+    );
+  }
+
+  Future<void> _handlePressButton() async {
+    // show input autocomplete with selected mode
+    // then get the Prediction selected
+    Prediction p = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: kGoogleApiKey,
+      onError: onError,
+      mode: _mode,
+      language: "fr",
+      components: [Component(Component.country, "fr")],
+    );
+
+    displayPrediction(p, homeScaffoldKey.currentState);
+  }
+}
+
+Future<Null> displayPrediction(Prediction p, ScaffoldState scaffold) async {
+  if (p != null) {
+    PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId);
+    final lat = detail.result.geometry.location.lat;
+    final lng = detail.result.geometry.location.lng;
+
+    scaffold.showSnackBar(
+      SnackBar(content: Text("${p.description} - $lat/$lng")),
     );
   }
 }
 
+class CustomSearchScaffold extends PlacesAutocompleteWidget {
+  CustomSearchScaffold()
+      : super(
+    apiKey: kGoogleApiKey,
+    sessionToken: Uuid().generateV4(),
+    language: "en",
+    components: [Component(Component.country, "uk")],
+  );
 
-save() async {
-  await MyApp.init();
-  localStorage.setString('email', emailController.text.toString());
-  localStorage.setString('password', pwdController.text.toString());
+  @override
+  _CustomSearchScaffoldState createState() => _CustomSearchScaffoldState();
+}
 
+class _CustomSearchScaffoldState extends PlacesAutocompleteState {
+  @override
+  Widget build(BuildContext context) {
+    final appBar = AppBar(title: AppBarPlacesAutoCompleteTextField());
+    final body = PlacesAutocompleteResult(
+      onTap: (p) {
+        displayPrediction(p, searchScaffoldKey.currentState);
+      },
+      logo: Row(
+        children: [FlutterLogo()],
+        mainAxisAlignment: MainAxisAlignment.center,
+      ),
+    );
+    return Scaffold(key: searchScaffoldKey, appBar: appBar, body: body);
+  }
+
+  @override
+  void onResponseError(PlacesAutocompleteResponse response) {
+    super.onResponseError(response);
+    searchScaffoldKey.currentState.showSnackBar(
+      SnackBar(content: Text(response.errorMessage)),
+    );
+  }
+
+  @override
+  void onResponse(PlacesAutocompleteResponse response) {
+    super.onResponse(response);
+    if (response != null && response.predictions.isNotEmpty) {
+      searchScaffoldKey.currentState.showSnackBar(
+        SnackBar(content: Text("Got answer")),
+      );
+    }
+  }
+}
+
+class Uuid {
+  final Random _random = Random();
+
+  String generateV4() {
+    final int special = 8 + _random.nextInt(4);
+
+    return '${_bitsDigits(16, 4)}${_bitsDigits(16, 4)}-'
+        '${_bitsDigits(16, 4)}-'
+        '4${_bitsDigits(12, 3)}-'
+        '${_printDigits(special, 1)}${_bitsDigits(12, 3)}-'
+        '${_bitsDigits(16, 4)}${_bitsDigits(16, 4)}${_bitsDigits(16, 4)}';
+  }
+
+  String _bitsDigits(int bitCount, int digitCount) =>
+      _printDigits(_generateBits(bitCount), digitCount);
+
+  int _generateBits(int bitCount) => _random.nextInt(1 << bitCount);
+
+  String _printDigits(int value, int count) =>
+      value.toRadixString(16).padLeft(count, '0');
 }

@@ -24,6 +24,7 @@ class _MyLoginState extends State<MyLogin> {
   final _formKey = GlobalKey<FormState>();
 @override
   void initState() {
+    checkUser(email, psw);
     super.initState();
   }
   @override
@@ -122,9 +123,7 @@ class _MyLoginState extends State<MyLogin> {
                             // Navigator.push(context, MaterialPageRoute(
                             //     builder: (context) => FirstIntro()
                             // ));
-                            toast.showOverLay(
-                                _sharedPreferences != null ? _sharedPreferences
-                                    .get('email').toString() : 'Wait',
+                            toast.showOverLay(_sharedPreferences.getString('email'),
                                 Colors.white, Colors.black38, context);
                           }
                         },
@@ -198,18 +197,9 @@ class _MyLoginState extends State<MyLogin> {
     );
   }
 
-  // save() async {
-  //   _sharedPreferences = await SharedPreferences.getInstance();
-  //
-  //   setState(() {
-  //     _sharedPreferences.setString('email', email);
-  //     _sharedPreferences.setString('password', psw);
-  //   });
-  // }
-
   checkUser(String email,String psw) async {
     _sharedPreferences = await SharedPreferences.getInstance();
-    if (email==_sharedPreferences.get('email').toString()||psw==_sharedPreferences.get('password').toString()) {
+    if (email==_sharedPreferences.getString('email')||psw==_sharedPreferences.getString('password')) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => FirstIntro()));
     }

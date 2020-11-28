@@ -3,7 +3,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spaciko/TandC/TermsAndConditon.dart';
-import 'package:spaciko/intro/FirstIntro.dart';
 import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/utils/Validation.dart';
 import 'package:spaciko/widgets/Pelette.dart';
@@ -23,13 +22,13 @@ class Register extends StatefulWidget {
   @override
   _RegisterState createState() => _RegisterState();
 }
-SharedPreferences _sharedPreferences;
 String email,psw,fname,lname;
 bool isChecked;
 
 class _RegisterState extends State<Register> {
   bool checkboxValue = false;
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,6 +110,7 @@ class _RegisterState extends State<Register> {
                       contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0)
                     ),
                     validator: (value){
+                      email = value;
                       if(Validation.isEmailValid(value)){
                         return 'Enter valid Email';
                       }
@@ -130,6 +130,7 @@ class _RegisterState extends State<Register> {
                         contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0)
                     ),
                     validator: (text){
+                      psw = text;
                       if(Validation.isPswValid(text)){
                         return 'Password must be more than 8 character';
                       }
@@ -199,10 +200,10 @@ class _RegisterState extends State<Register> {
                       child: FlatButton(
                       onPressed: (){
                           if(_formKey.currentState.validate()){
-                            save();
                               var toast = Toast();
                               toast.overLay = false;
-                              toast.showOverLay(_sharedPreferences.get('email').toString(), Colors.black, Colors.black38, context);
+                              addStringToSF();
+                              // toast.showOverLay(prefs.getString('email'), Colors.black, Colors.black38, context);
                               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyLogin()));
                           }
                       },
@@ -259,14 +260,11 @@ class _RegisterState extends State<Register> {
     );
   }
 
-  save() async {
-    _sharedPreferences = await SharedPreferences.getInstance();
-    setState(() {
-      _sharedPreferences.setString('email', email);
-      _sharedPreferences.setString('password', psw);
-      _sharedPreferences.setString('password', fname);
-      _sharedPreferences.setString('password', lname);
-      _sharedPreferences.setBool('password', isChecked);
-    });
+  SharedPreferences prefs;
+  addStringToSF() async {
+     prefs = await SharedPreferences.getInstance();
+      prefs.setString('email', email);
+     prefs.setString('[password]', psw);
   }
+
 }
