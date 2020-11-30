@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:spaciko/model/CheckItem.dart';
 import 'package:spaciko/widgets/Pelette.dart';
@@ -24,16 +25,34 @@ class _CompassScreenState extends State<CompassScreen> {
   BitmapDescriptor pinLocationIcon;
   Set<Marker> _markers = {};
   Completer<GoogleMapController> _controller = Completer();
+  Position _currentPosition;
+  LatLng _lng;
 
   @override
   void initState() {
     setCustomMapPin();
     super.initState();
+    _getCurrentLocation();
   }
 
   void itemChange(bool val, int index){
     setState(() {
       checkList[index].isChecked = val;
+    });
+  }
+  _getCurrentLocation() {
+    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+        print("${_currentPosition.latitude}${_currentPosition.longitude}");
+        _lng = LatLng(_currentPosition.latitude,_currentPosition.longitude);
+      });
+    }).catchError((e) {
+      print(e);
     });
   }
 
@@ -43,7 +62,6 @@ class _CompassScreenState extends State<CompassScreen> {
         'image/ic_marker1.png');
   }
 
-  final LatLng _lng = const LatLng(23.1702, 71.8311);
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -129,32 +147,17 @@ class _CompassScreenState extends State<CompassScreen> {
           Stack(
               children: <Widget>[
                 GoogleMap(initialCameraPosition: CameraPosition(
-                  target: _lng,
-                  zoom: 8
-                 ),
+                    target: _lng,
+                ),
                   markers: _markers,
                   onMapCreated: (GoogleMapController controller){
                     _controller.complete(controller);
                     setState(() {
-                      _markers.add(Marker(markerId: MarkerId('<MARKER_ID>'),icon: pinLocationIcon,position: _lng));
+                      _markers.add(Marker(markerId: MarkerId('<MARKER_ID>'),icon: pinLocationIcon,position:_lng));
                     });
                   },
                 ),
 
-                // GoogleMap(
-                //     markers:{
-                //       Marker(
-                //        GeoCoord(21.1702, 72.8311),
-                //       )
-                //     },
-                //     initialZoom: 12,
-                //     initialPosition:
-                //     GeoCoord(21.1702, 72.8311),
-                //     mapType: MapType.roadmap,
-                //     interactive: true,
-                //     onTap: (coord) {
-                //     }
-                // ),
                 Visibility(
                   child: Container(
                     height: 226,
