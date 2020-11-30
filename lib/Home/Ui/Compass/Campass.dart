@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -30,8 +29,8 @@ class _CompassScreenState extends State<CompassScreen> {
 
   @override
   void initState() {
-    setCustomMapPin();
     super.initState();
+    setCustomMapPin();
     _getCurrentLocation();
   }
 
@@ -40,6 +39,7 @@ class _CompassScreenState extends State<CompassScreen> {
       checkList[index].isChecked = val;
     });
   }
+
   _getCurrentLocation() {
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
@@ -51,6 +51,16 @@ class _CompassScreenState extends State<CompassScreen> {
         print("${_currentPosition.latitude}${_currentPosition.longitude}");
         _lng = LatLng(_currentPosition.latitude,_currentPosition.longitude);
       });
+      GoogleMap(
+        initialCameraPosition: CameraPosition(target: _lng,zoom: 8),
+        markers: _markers,
+        onMapCreated: (GoogleMapController controller){
+          _controller.complete(controller);
+          setState(() {
+            _markers.add(Marker(markerId: MarkerId('<MARKER_ID>'),icon: pinLocationIcon,position:_lng));
+          });
+        },
+      );
     }).catchError((e) {
       print(e);
     });
@@ -146,17 +156,17 @@ class _CompassScreenState extends State<CompassScreen> {
          child:
           Stack(
               children: <Widget>[
-                GoogleMap(initialCameraPosition: CameraPosition(
-                    target: _lng,
-                ),
-                  markers: _markers,
-                  onMapCreated: (GoogleMapController controller){
-                    _controller.complete(controller);
-                    setState(() {
-                      _markers.add(Marker(markerId: MarkerId('<MARKER_ID>'),icon: pinLocationIcon,position:_lng));
-                    });
-                  },
-                ),
+                (_lng!=null)?GoogleMap(
+            initialCameraPosition: CameraPosition(target: _lng,zoom: 8),
+            markers: _markers,
+            onMapCreated: (GoogleMapController controller){
+              _controller.complete(controller);
+              setState(() {
+                _markers.add(Marker(markerId: MarkerId('<MARKER_ID>'),icon: pinLocationIcon,position:_lng));
+              });
+            },
+          )
+                :Center(child: CircularProgressIndicator(),),
 
                 Visibility(
                   child: Container(
@@ -247,23 +257,7 @@ class _CompassScreenState extends State<CompassScreen> {
       )
     );
   }
-  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
-    final Completer<BitmapDescriptor> bitmapIcon =
-    Completer<BitmapDescriptor>();
-    final ImageConfiguration config = createLocalImageConfiguration(context);
 
-    const AssetImage('assets/red_square.png')
-        .resolve(config)
-        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
-      final ByteData bytes =
-      await image.image.toByteData(format: ImageByteFormat.png);
-      final BitmapDescriptor bitmap =
-      BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
-      bitmapIcon.complete(bitmap);
-    }));
-
-    return await bitmapIcon.future;
-  }
 }
 List<checkItem> checkList = <checkItem>[
    checkItem('Meeting Room'),
