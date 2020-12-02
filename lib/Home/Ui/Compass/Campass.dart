@@ -1,13 +1,30 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:spaciko/model/CheckItem.dart';
+import 'package:spaciko/model/LatLong.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
+import 'dart:ui' as ui;
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: CompassScreen(),
+    );
+  }
+}
+
 
 class CompassScreen extends StatefulWidget {
   @override
@@ -17,20 +34,33 @@ class CompassScreen extends StatefulWidget {
 var toast = Toast();
 class _CompassScreenState extends State<CompassScreen> {
   bool visible = false;
+  bool temp = true;
   List<String> blankBtnFilterList = [];
   List<String> buttonFilter = ['Hourly','Daily','Monthly','Property Type'];
   checkItem items;
 
   BitmapDescriptor pinLocationIcon;
+  BitmapDescriptor greenMarker;
+  BitmapDescriptor markerIcon;
   Set<Marker> _markers = {};
   Completer<GoogleMapController> _controller = Completer();
   Position _currentPosition;
+  List<String> buttonFilter1 = ['Hourly','Daily','Monthly','Property Type'];
   LatLng _lng;
+  List<String> selectedMarker =[];
+
+  List<ParseLatlng> loadPerson() {
+    String jsonString = '{"offices": [{"address": "Aabogade 158200 AarhusDenmark", "id": "aarhus", "image": "https://lh3.googleusercontent.com/tpBMFN5os8K-qXIHiAX5SZEmN5fCzIGrj9FdJtbZPUkC91ookSoY520NYn7fK5yqmh1L1m3F2SJA58v6Qps3JusdrxoFSwk6Ajv2K88", "lat": 56.172249, "lng": 10.187372, "name": "Aarhus", "phone": "", "region": "europe"}, {"address": "Claude Debussylaan 341082 MD, AmsterdamNetherlands", "id": "amsterdam", "image": "https://lh3.googleusercontent.com/gG1zKXcSmRyYWHwUn2Z0MITpdqwb52RAEp3uthG2J5Xl-4_Wz7_WmoM6T_TBg6Ut3L1eF-8XENO10sxVIFdQHilj8iRG29wROpSoug", "lat": 52.337801, "lng": 4.872066, "name": "Amsterdam", "phone": "", "region": "europe"}, {"address": "2300 Traverwood Dr.Ann Arbor, MI 48105United States", "id": "ann-arbor", "image": "https://lh3.googleusercontent.com/Iim0OVcAgg9vmXc5ADn9KvOQFplrMZ8hBTg2biiTtuWPy_r56cy4Byx1ROk6coGt7knQdmx_jO45VX1kiCJZ0QzEtS97AP_BYG4F2w", "lat": 42.3063848, "lng": -83.7140833, "name": "Ann Arbor", "phone": "+1 734-332-6500", "region": "north-america"}, {"address": "Fragkokklisias 7Athens 151 25Greece", "id": "athens", "image": "https://lh3.googleusercontent.com/XroZnqewSrO6KuvXM5hDHtjUJzUcRQLZYfCKs4jP44dKezRvNx58uxaqUKS4fQ2eXzG2TpJNJ1X2xtfBe7Prl5hSG_xjPEF1xLtFodM", "lat": 38.03902, "lng": 23.804595, "name": "Athens", "phone": "", "region": "europe"}, {"address": "10 10th Street NEAtlanta, GA 30309United States", "id": "atlanta", "image": "https://lh3.googleusercontent.com/py7Qvqqoec1MB0dMKnGWn7ju9wET_dIneTb24U-ri8XAsECJnOaBoNmvfa51PIaC0rlsyQvQXvAK8RdLqpkhpkRSzmhNKqb-tY2_", "lat": 33.781827, "lng": -84.387301, "name": "Atlanta", "phone": "+1 404-487-9000", "region": "north-america"}, {"address": "500 W 2nd StSuite 2900Austin, TX 78701United States", "id": "austin", "image": "https://lh3.googleusercontent.com/WFaJgWPdd7xPL7CQHizlqEzLDjT_GUAiWHIWUM0PiVSsv8q3Rjt9QgbyQazuQwYfN5qLORajv8eKSHlKwZo-M89T2Y12zFSxSIme08c", "lat": 30.266035, "lng": -97.749237, "name": "Austin", "phone": "+1 512-343-5283", "region": "north-america"}]}';
+    final jsonResponse = json.decode(jsonString);
+    LatLong latLong = LatLong.fromJson(jsonResponse);
+    return latLong.list;
+  }
 
   @override
   void initState() {
     super.initState();
     setCustomMapPin();
+    setGreenCustomMapPin();
     _getCurrentLocation();
   }
 
@@ -42,7 +72,6 @@ class _CompassScreenState extends State<CompassScreen> {
 
   _getCurrentLocation() {
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
@@ -51,30 +80,43 @@ class _CompassScreenState extends State<CompassScreen> {
         print("${_currentPosition.latitude}${_currentPosition.longitude}");
         _lng = LatLng(_currentPosition.latitude,_currentPosition.longitude);
       });
-      GoogleMap(
-        initialCameraPosition: CameraPosition(target: _lng,zoom: 8),
-        markers: _markers,
-        onMapCreated: (GoogleMapController controller){
-          _controller.complete(controller);
-          setState(() {
-            _markers.add(Marker(markerId: MarkerId('<MARKER_ID>'),icon: pinLocationIcon,position:_lng));
-          });
-        },
-      );
+      // GoogleMap(
+      //   initialCameraPosition: CameraPosition(target: _lng,zoom: 8),
+      //   markers: _markers,
+      //   onMapCreated: (GoogleMapController controller){
+      //     _controller.complete(controller);
+      //     setState(() {
+      //       _markers.add(Marker(markerId: MarkerId('<MARKER_ID>'),icon: pinLocationIcon,position:_lng));
+      //     });
+      //   },
+      // );
     }).catchError((e) {
       print(e);
     });
   }
 
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
+  }
+
+  Future<BitmapDescriptor> getBitmapDescriptorFromAssetBytes(String path, int width) async {
+    final Uint8List imageData = await getBytesFromAsset(path, width);
+    return BitmapDescriptor.fromBytes(imageData);
+  }
+
   void setCustomMapPin() async {
-    pinLocationIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(),
-        'image/ic_marker1.png');
+    pinLocationIcon = await getBitmapDescriptorFromAssetBytes('image/ic_marker1.png', 40);
+  }
+  void setGreenCustomMapPin() async {
+    greenMarker = await getBitmapDescriptorFromAssetBytes('image/ic_pin_circle_green.png', 40);
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return  Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(110),
           child: Container(
@@ -157,20 +199,28 @@ class _CompassScreenState extends State<CompassScreen> {
           Stack(
               children: <Widget>[
                 (_lng!=null)?GoogleMap(
-            initialCameraPosition: CameraPosition(target: _lng,zoom: 8),
+            initialCameraPosition: CameraPosition(target: LatLng(56.172249,10.187372),zoom: 4),
             markers: _markers,
             onMapCreated: (GoogleMapController controller){
               _controller.complete(controller);
               setState(() {
-                _markers.add(Marker(markerId: MarkerId('<MARKER_ID>'),icon: pinLocationIcon,position:_lng));
+                List<ParseLatlng> list = loadPerson();
+                print(list.length);
+                for(int i=0;i<list.length;i++){
+                  _markers.add(Marker(markerId: MarkerId(list[i].id),icon:temp?greenMarker:pinLocationIcon,position:LatLng(list[i].lat,list[i].lng),
+                    onTap: (){
+                          temp = false;
+                          print('Marker Color =>>$temp');
+                    }
+                  ));
+                }
               });
             },
-          )
-                :Center(child: CircularProgressIndicator(),),
+          ) :Center(child: CircularProgressIndicator(),),
 
                 Visibility(
                   child: Container(
-                    height: 226,
+                    height: 228,
                     color: Colors.white,
                     width: MediaQuery.of(context).size.width,
                     child: Column(

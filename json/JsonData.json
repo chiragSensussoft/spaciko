@@ -1,0 +1,37 @@
+{
+  "id": "1",
+  "name:" : "Chirag",
+  "age" : 19,
+  "place" : [
+    "india",
+    "us"
+  ],
+
+  "image" : [
+    {
+      "id": 11,
+      "name" : "img1"
+    },
+    {
+      "id": 12,
+      "name" : "img2"
+    },
+    {
+      "id": 13,
+      "name" : "img3"
+    },
+    {
+      "id": 14,
+      "name" : "img4"
+    },
+    {
+      "id": 15,
+      "name" : "img5"
+    },
+    {
+      "id": 16,
+      "name" : "img6"
+    }
+  ],
+
+}
