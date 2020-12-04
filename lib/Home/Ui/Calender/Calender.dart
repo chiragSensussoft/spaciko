@@ -53,7 +53,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(25),topLeft: Radius.circular(25)),
+                 // borderRadius: BorderRadius.only(topRight: Radius.circular(25),topLeft: Radius.circular(25)),
 
                 ),
               ),
