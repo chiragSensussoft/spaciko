@@ -17,10 +17,14 @@ class ParseLatlng{
   final double lat;
   final double lng;
   final String id;
-  ParseLatlng({this.lat,this.lng,this.id});
+  final String imgUrl;
+  final String address;
+  final String name;
+  final String region;
+  ParseLatlng({this.lat,this.lng,this.id,this.imgUrl,this.name,this.address,this.region});
 
   factory ParseLatlng.fromJson(Map<String,dynamic> json){
-    return ParseLatlng(lat: json['lat'],lng: json['lng'],id: json['id']);
+    return ParseLatlng(lat: json['lat'],lng: json['lng'],id: json['id'],imgUrl: json['image'],address: json['address'],name: json['name'],region: json['region']);
   }
 
 }
