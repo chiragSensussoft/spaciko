@@ -81,7 +81,6 @@ class _CompassScreenState extends State<CompassScreen> {
         .then((Position position) {
       setState(() {
         _currentPosition = position;
-        print("${_currentPosition.latitude}${_currentPosition.longitude}");
         _lng = LatLng(_currentPosition.latitude,_currentPosition.longitude);
       });
     }).catchError((e) {
@@ -193,12 +192,9 @@ class _CompassScreenState extends State<CompassScreen> {
          child:
           Stack(
               children: <Widget>[
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                ),
 
                 (_lng!=null)?GoogleMap(
-            initialCameraPosition: CameraPosition(target: LatLng(56.172249,10.187372),zoom: 4),
+            initialCameraPosition: CameraPosition(target: _lng,zoom: 4),
             markers: Set.of(markers.values),
             onTap: (val){
               setState(() {
@@ -213,13 +209,12 @@ class _CompassScreenState extends State<CompassScreen> {
                    onTap: (){
                      setState(() {
                        _selectedIndex = i;
-                       print(_selectedIndex);
                        _pageController = PageController(viewportFraction: 0.8,initialPage: _selectedIndex,keepPage: true);
 
-                     Future.delayed(Duration(milliseconds: 20),(){
-                       _pageController.jumpToPage(_selectedIndex);
-                       _pageController.animateToPage(_selectedIndex,curve: Curves.decelerate,duration: Duration(milliseconds: 300));
-                     });
+                       Future.delayed(Duration(milliseconds: 0),(){
+                         _pageController.jumpToPage(_selectedIndex);
+                         _pageController.animateToPage(_selectedIndex,curve: Curves.decelerate,duration: Duration(milliseconds: 300));
+                       });
                         markers[i.toString()] =  Marker(markerId: MarkerId(list[i].id),icon: greenMarker,position: LatLng(list[i].lat,list[i].lng),
                         onTap: (){
                           setState(() {

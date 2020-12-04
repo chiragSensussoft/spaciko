@@ -322,13 +322,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0-nullsafety.5"
-  vertical_calendar:
-    dependency: "direct main"
-    description:
-      name: vertical_calendar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1+6"
   webview_flutter:
     dependency: "direct main"
     description:

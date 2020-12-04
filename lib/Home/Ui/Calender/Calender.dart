@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:spaciko/Home/Ui/Calender/vertical_calendar.dart';
 import 'package:spaciko/widgets/Pelette.dart';
-import 'package:vertical_calendar/vertical_calendar.dart';
 
 class CalenderScreen extends StatefulWidget {
   @override
@@ -53,8 +53,14 @@ class _CalenderScreenState extends State<CalenderScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                 // borderRadius: BorderRadius.only(topRight: Radius.circular(25),topLeft: Radius.circular(25)),
-
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(25),topLeft: Radius.circular(25)),
+                ),
+                child:VerticalCalendar(
+                  minDate: DateTime.now(),
+                  maxDate: DateTime.now().add(const Duration(days: 365)),
+                  onDayPressed: (DateTime date) {
+                    print('Date selected: $date');
+                  },
                 ),
               ),
             )
