@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
 
-import '../BottomBar.dart';
-import '../TopBarContent.dart';
-import '../responsive.dart';
+import 'BottomBar.dart';
+import 'TopBarContent.dart';
+import '../widgets/responsive.dart';
 import 'Ui/Add/Add.dart';
 import 'Ui/Calender/Calender.dart';
 import 'Ui/Comment/Comment.dart';

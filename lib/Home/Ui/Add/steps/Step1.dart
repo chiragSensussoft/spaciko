@@ -6,6 +6,7 @@ class Step1 extends StatefulWidget {
   @override
   _Step1State createState() => _Step1State();
 }
+
 String dropdownValue = 'Good';
 class _Step1State extends State<Step1> {
   @override

@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'Home/Ui/Add/Add.dart';
-import 'Home/Ui/Calender/Calender.dart';
-import 'Home/Ui/Comment/Comment.dart';
-import 'Home/Ui/Compass/Campass.dart';
-import 'Home/Ui/Profile/Profile.dart';
+import 'Ui/Add/Add.dart';
+import 'Ui/Calender/Calender.dart';
+import 'Ui/Comment/Comment.dart';
+import 'Ui/Compass/Campass.dart';
+import 'Ui/Profile/Profile.dart';
 import 'floating_quick_access_bar.dart';
 
 class TopBarContent extends StatefulWidget {

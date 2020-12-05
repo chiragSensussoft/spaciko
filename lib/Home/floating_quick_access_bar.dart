@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spaciko/responsive.dart';
+import 'package:spaciko/widgets/responsive.dart';
 
 class FloatingQuickAccessBar extends StatefulWidget {
   final Function(int) onChange;
