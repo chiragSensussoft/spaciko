@@ -211,7 +211,7 @@ class _CompassScreenState extends State<CompassScreen> {
                        _selectedIndex = i;
                        _pageController = PageController(viewportFraction: 0.8,initialPage: _selectedIndex,keepPage: true);
 
-                       Future.delayed(Duration(milliseconds: 0),(){
+                       Future.delayed(Duration(milliseconds: 10),(){
                          _pageController.jumpToPage(_selectedIndex);
                          _pageController.animateToPage(_selectedIndex,curve: Curves.decelerate,duration: Duration(milliseconds: 300));
                        });

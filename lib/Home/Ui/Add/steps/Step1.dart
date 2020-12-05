@@ -61,7 +61,7 @@ class _Step1State extends State<Step1> {
               ),
             )
         ),
-        Container(margin: const EdgeInsets.only(top: 60,left: 20,right: 20),
+        Container(margin: const EdgeInsets.only(top: 140,left: 20,right: 20),
           height: 40,
           child: FlatButton(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
