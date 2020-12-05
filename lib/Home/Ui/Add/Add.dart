@@ -16,6 +16,10 @@ class AddScreen extends StatefulWidget {
 }
 
 class _AddScreenState extends State<AddScreen> {
+  List<String> _stepText = ['1','2','3','4','5','6'];
+  var activeColor = Pelette.ColorPrimaryDark;
+  var inActiveColor = Pelette.colorGreenTrans;
+  int _curStep =0;
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -34,116 +38,20 @@ class _AddScreenState extends State<AddScreen> {
                     color: Pelette.colorLightBlue50,
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
                 ),
-                child: Column(
-                  children: [
-                    Container(padding: const EdgeInsets.only(left: 30,right: 30),
-                      height: 50,
-                      child: Stack(
-                        children: [
-                          Container(margin: const EdgeInsets.only(top: 10),
-                            height: 30,
-                            child: Center(
-                              child: Container(
-                                height: 2,
-                                color: Pelette.ColorPrimaryDark,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            child:Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  height:50,
-                                  child: CircleAvatar(
-                                    radius: 15,
-                                    backgroundColor: Pelette.ColorPrimaryDark,
-                                    child: Text(
-                                      "1",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height:50,
-                                  child: CircleAvatar(
-                                    radius: 15,
-                                    backgroundColor: Pelette.colorGreenTrans,
-                                    child: Text(
-                                      "2",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height:50,
-                                  child: CircleAvatar(
-                                    radius: 15,
-                                    backgroundColor: Pelette.colorGreenTrans,
-                                    child: Text(
-                                      "3",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height:50,
-                                  child: CircleAvatar(
-                                    radius: 15,
-                                    backgroundColor: Pelette.colorGreenTrans,
-                                    child: Text(
-                                      "4",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height:50,
-                                  child: CircleAvatar(
-                                    radius: 15,
-                                    backgroundColor: Pelette.colorGreenTrans,
-                                    child: Text(
-                                      "5",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height:50,
-                                  child: CircleAvatar(
-                                    radius: 15,
-                                    backgroundColor: Pelette.colorGreenTrans,
-                                    child: Text(
-                                      "6",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
+                child: Container(margin: const EdgeInsets.only(left: 20,right: 20,top: 10),
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: step(),
                       ),
-                    ),
-                    Expanded(
-                      child:Container(
-                          child: Step1(),
-                      ),
-                    )
-                  ],
-                )
+                      Expanded(
+                        child: Step1(),
+                      )
+                    ],
+                  )
+                ),
               ),
             )
           ],
@@ -151,4 +59,34 @@ class _AddScreenState extends State<AddScreen> {
       )
     );
   }
+
+ List<Widget> step() {
+   var list = <Widget>[];
+    _stepText.asMap().forEach((i, value) {
+
+      var circleColor =
+      (i == 0 || _curStep > i + 1) ? activeColor : inActiveColor;
+
+      list.add(
+        Container(
+          width: 30.0,
+          height: 30.0,
+          child: Center(child: Text(value,style: TextStyle(color: Colors.white),),),
+          decoration: new BoxDecoration(
+            color: circleColor,
+            borderRadius: new BorderRadius.all(new Radius.circular(25.0)),
+          ),
+        ),
+      );
+      if (i != _stepText.length - 1) {
+        list.add(Expanded(
+            child: Container(
+              height: 2,
+              color: Pelette.ColorPrimaryDark,
+            )));
+      }
+    });
+    return list;
+  }
+
 }
