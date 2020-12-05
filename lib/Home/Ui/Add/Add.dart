@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step1.dart';
+import 'package:spaciko/Home/Ui/Add/steps/Step2.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
 class Add extends StatelessWidget {
@@ -19,10 +20,9 @@ class _AddScreenState extends State<AddScreen> {
   List<String> _stepText = ['1','2','3','4','5','6'];
   var activeColor = Pelette.ColorPrimaryDark;
   var inActiveColor = Pelette.colorGreenTrans;
-  int _curStep =0;
+  int _curStep =1;
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
         color: Pelette.ColorPrimaryDark,
@@ -30,7 +30,7 @@ class _AddScreenState extends State<AddScreen> {
           children: [
             Container(
               color: Pelette.ColorPrimaryDark,
-              height: MediaQuery.of(context).size.height *0.16,
+              height: MediaQuery.of(context).size.height * 0.16,
             ),
             Expanded(
               child: Container(
@@ -47,7 +47,7 @@ class _AddScreenState extends State<AddScreen> {
                         children: step(),
                       ),
                       Expanded(
-                        child: Step1(),
+                        child: _ReplaceStep(),
                       )
                     ],
                   )
@@ -60,12 +60,21 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
+  Widget _ReplaceStep(){
+    if(_curStep ==0){
+      return Step1();
+    }
+    else if(_curStep == 1){
+      return Step2();
+    }
+  }
+
  List<Widget> step() {
    var list = <Widget>[];
     _stepText.asMap().forEach((i, value) {
 
       var circleColor =
-      (i == 0 || _curStep > i + 1) ? activeColor : inActiveColor;
+      (i == _curStep) ? activeColor : inActiveColor;
 
       list.add(
         Container(

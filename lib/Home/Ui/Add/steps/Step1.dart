@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
 class Step1 extends StatefulWidget {
+
+
   @override
   _Step1State createState() => _Step1State();
 }
@@ -67,7 +69,8 @@ class _Step1State extends State<Step1> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
             minWidth: MediaQuery.of(context).size.width,
             color: Pelette.ColorPrimaryDark,
-            onPressed: (){},
+            onPressed: (){
+            },
             child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
           ),
         )
