@@ -318,7 +318,7 @@ class _CompassScreenState extends State<CompassScreen> {
                    width: MediaQuery.of(context).size.width,
                    child: Visibility(
                      child: SizedBox(
-                       height: 214,
+                       height: 211,
                        child: PageView.builder(
                          itemCount: list.length,
                          onPageChanged: (int index) => setState(() => _index = index),

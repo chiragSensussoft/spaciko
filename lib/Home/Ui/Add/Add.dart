@@ -11,16 +11,23 @@ class Add extends StatelessWidget {
   }
 }
 
-class AddScreen extends StatefulWidget {
+class AddScreen extends StatefulWidget{
   @override
   _AddScreenState createState() => _AddScreenState();
 }
 
-class _AddScreenState extends State<AddScreen> {
+class _AddScreenState extends State<AddScreen>{
   List<String> _stepText = ['1','2','3','4','5','6'];
   var activeColor = Pelette.ColorPrimaryDark;
   var inActiveColor = Pelette.colorGreenTrans;
-  int _curStep =1;
+  int _curStep =0;
+  @override
+  void initState() {
+    step();
+    //_pageStep();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +54,7 @@ class _AddScreenState extends State<AddScreen> {
                         children: step(),
                       ),
                       Expanded(
-                        child: _ReplaceStep(),
+                        child: setps(),
                       )
                     ],
                   )
@@ -58,15 +65,6 @@ class _AddScreenState extends State<AddScreen> {
         ),
       )
     );
-  }
-
-  Widget _ReplaceStep(){
-    if(_curStep ==0){
-      return Step1();
-    }
-    else if(_curStep == 1){
-      return Step2();
-    }
   }
 
  List<Widget> step() {
@@ -87,6 +85,7 @@ class _AddScreenState extends State<AddScreen> {
           ),
         ),
       );
+
       if (i != _stepText.length - 1) {
         list.add(Expanded(
             child: Container(
@@ -96,6 +95,36 @@ class _AddScreenState extends State<AddScreen> {
       }
     });
     return list;
+  }
+
+  Widget _pageStep() {
+    return PageView.builder(
+      itemCount: _widgetTransition.length,
+      itemBuilder: (_,index){
+        return Container(
+          child: _widgetTransition.elementAt(index),
+        );
+      },
+       onPageChanged: (int index) => setState(() => _curStep = index),
+    );
+  }
+
+  List<Widget> _widgetTransition = [
+    Container(
+      child: Step1(),
+    ),
+    Container(
+      child: Step2(),
+    ),
+  ];
+
+  Widget setps() {
+    if(_curStep ==0){
+      return Step1(curStep: 1,onChange: (val) => setState(()=>_curStep = val));
+    }
+    if(_curStep==1){
+      return Step2();
+    }
   }
 
 }

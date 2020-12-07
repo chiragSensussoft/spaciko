@@ -17,8 +17,7 @@ class MyActivity extends StatelessWidget {
   }
 }
 
-class Register extends StatefulWidget {
-
+class Register extends StatefulWidget{
   @override
   _RegisterState createState() => _RegisterState();
 }

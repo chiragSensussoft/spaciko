@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
 class Step1 extends StatefulWidget {
-
+   int curStep;
+   Function(int) onChange;
+   Step1({Key key,this.curStep,this.onChange}): super(key: key);
 
   @override
   _Step1State createState() => _Step1State();
@@ -17,7 +19,7 @@ class _Step1State extends State<Step1> {
       children: [
         Container(padding: const EdgeInsets.only(left: 20,right: 20,top: 20),
           child:  Text.rich(
-            TextSpan(text: 'Ready to Place your space in the spotlight?',style: TextStyle(color: Colors.black,fontSize: 16,fontFamily: 'poppins_bold')),
+            TextSpan(text: 'Ready to Place your space in the spotlight?',style: TextStyle(color: Colors.black,fontSize: 16,fontFamily: 'poppins_medium')),
             textAlign: TextAlign.center,
           ),
         ),
@@ -34,7 +36,7 @@ class _Step1State extends State<Step1> {
           ),
         ),
         Container(padding: const EdgeInsets.only(top: 30),
-          child: Text('What Type of space do you own?',style:TextStyle(color: Colors.black,fontSize: 15,fontFamily: 'poppins_bold'),),
+          child: Text('What Type of space do you own?',style:TextStyle(color: Colors.black,fontSize: 15,fontFamily: 'poppins_medium'),),
         ),
         Container(margin: const EdgeInsets.only(left: 20,right: 20,top: 10),
             width: MediaQuery.of(context).size.width,
@@ -70,6 +72,8 @@ class _Step1State extends State<Step1> {
             minWidth: MediaQuery.of(context).size.width,
             color: Pelette.ColorPrimaryDark,
             onPressed: (){
+                widget.onChange(widget.curStep);
+                print(widget.curStep);
             },
             child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
           ),
