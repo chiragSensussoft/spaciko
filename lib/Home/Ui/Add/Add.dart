@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step1.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step2.dart';
+import 'package:spaciko/Home/Ui/Add/steps/Step3.dart';
+import 'package:spaciko/Home/Ui/Add/steps/Step4.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
 class Add extends StatelessWidget {
@@ -123,7 +125,13 @@ class _AddScreenState extends State<AddScreen>{
       return Step1(curStep: 1,onChange: (val) => setState(()=>_curStep = val));
     }
     if(_curStep==1){
-      return Step2();
+      return Step2(curStep: 2,onChange: (val) => setState(()=>_curStep = val));
+    }
+    if(_curStep==2){
+      return Step3(curStep: 3,onChange: (val) => setState(()=>_curStep = val));
+    }
+    if(_curStep==3){
+      return Step4(curStep: 4,onChange: (val) => setState(()=>_curStep = val));
     }
   }
 
