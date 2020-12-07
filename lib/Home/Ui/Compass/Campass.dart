@@ -313,68 +313,123 @@ class _CompassScreenState extends State<CompassScreen> {
                   visible: visible,
                 ),
 
-                 Positioned(
-                   bottom: 0,
-                   width: MediaQuery.of(context).size.width,
-                   child: Visibility(
-                     child: SizedBox(
-                       height: 211,
-                       child: PageView.builder(
-                         itemCount: list.length,
-                         onPageChanged: (int index) => setState(() => _index = index),
-                           controller:  _pageController,
-                           itemBuilder: (_, i) {
-                           return Transform.scale(
-                             scale: i == _index ? 1 : 0.9,
-                             child: GestureDetector(
-                               child: Card(
-                                   elevation: 6,
-                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                   child: Column(
-                                     children: [
-                                       Container(
-                                           height: 115,
-                                           decoration: BoxDecoration(
-                                             borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
-                                             image: DecorationImage(
-                                                 image: NetworkImage(list[i].imgUrl),
-                                                 fit: BoxFit.cover
-                                             ),
-                                           )
-                                       ),
-                                       Container(margin: const EdgeInsets.only(left: 5,bottom: 3,top: 2),
-                                         width: MediaQuery.of(context).size.width,
-                                         child:Text(list[i].id,textAlign: TextAlign.start,style: TextStyle(color: Colors.black,fontSize: 17,fontFamily: 'poppins_semibold'),),
-                                       ),
-                                       Container(margin: const EdgeInsets.only(left: 5),
-                                         width: MediaQuery.of(context).size.width,
-                                         child:Text(list[i].name,textAlign: TextAlign.start,),
-                                       ),
-                                       Container(margin: const EdgeInsets.only(left: 5),
-                                         width: MediaQuery.of(context).size.width,
-                                         child:Text(list[i].address,textAlign: TextAlign.start,overflow:TextOverflow.ellipsis),
-                                       ),
-                                       Container(margin: const EdgeInsets.only(left: 5,bottom: 2),
-                                         width: MediaQuery.of(context).size.width,
-                                         child:Text(list[i].region,textAlign: TextAlign.start,style: TextStyle(color: Colors.black,fontFamily: 'poppins_regular'),maxLines: 1,overflow:TextOverflow.ellipsis
-                                           ,),
-                                       ),
-                                       Container(
-                                         height: 3,
-                                         color: Pelette.ColorPrimaryDark,
-                                       )
-                                     ],
-                                   )
-                               ),
-                             )
-                           );
-                         },
-                       ),
-                     ),
-                     visible: courseul,
-                   ),
-                 )
-             ],
+                Visibility(
+                  visible: courseul,
+
+                  child:  Container(
+                    margin: EdgeInsets.only(bottom: 5),
+                    alignment: Alignment.bottomCenter,
+
+                    child: SizedBox(
+                      height: 210,
+                      width: MediaQuery.of(context).size.width,
+
+                      child: PageView.builder(
+                        scrollDirection: Axis.horizontal,
+                        physics: AlwaysScrollableScrollPhysics(),
+
+                        onPageChanged: (int index) =>
+                            setState(() =>
+                            _index = index),
+
+                        controller: _pageController,
+                        itemCount: list.length,
+
+                        itemBuilder: (context, i) {
+
+                          return Transform.scale(
+                            scale: i == _index ? 1.03 : 0.9,
+
+                            /*white box desing*/
+                            child: GestureDetector(
+                              onTap: () {
+                              },
+
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+
+                                elevation: 3,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+
+                                    Expanded(
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width,
+                                        height: 113,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10)),
+                                          image: DecorationImage(
+                                              image:  NetworkImage(list[i].imgUrl),
+                                              fit: BoxFit.cover
+                                          )
+                                        ),
+                                      ),
+                                    ),
+
+                                    /*name*/
+                                    Container(
+                                      alignment: Alignment.centerLeft,
+                                      margin: EdgeInsets.only(left: 10, top: 2),
+                                      child: Text(list[i].name, style: TextStyle(fontSize: 16, fontFamily: 'poppins_semibold',
+                                          color: Colors.black),
+                                      ),
+                                    ),
+
+                                    /*work*/
+                                    Container(
+                                      alignment: Alignment.centerLeft,
+                                      margin: EdgeInsets.only(left: 10, top: 5),
+                                      child: Text(list[i].region, style: TextStyle(fontSize: 12, fontFamily: 'poppins_regular',
+                                          color: Colors.black38),
+                                      ),
+                                    ),
+
+                                    /*address*/
+                                    Container(
+                                      alignment: Alignment.centerLeft,
+                                      margin: EdgeInsets.only(left: 10,),
+                                      child: Text(
+                                        list[i].address,overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: 'poppins_regular',
+                                            color:
+                                            Colors.black),
+                                      ),
+                                    ),
+
+                                    /*rupees*/
+                                    Container(
+                                      alignment: Alignment.centerLeft,
+                                      margin: EdgeInsets.only(left: 10,),
+                                      child: Text('Lat : ${list[i].lat}   Lng : ${list[i].lng}', style: TextStyle(fontSize: 12, fontFamily: 'poppins_regular',
+                                          color: Colors.black),
+                                      ),
+                                    ),
+
+                                    /*green line*/
+                                    Container(
+                                      margin: EdgeInsets.only(top: 2, left: 3, right: 3),
+                                      height: 2,
+                                      width: MediaQuery.of(context).size.width,
+                                      color: Pelette.ColorPrimaryDark,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+
+                      ),
+                    ),
+                  ),
+                ),
+
+              ],
           ),
        ),
     );
