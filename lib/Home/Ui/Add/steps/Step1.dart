@@ -15,7 +15,6 @@ class Step1 extends StatefulWidget {
 String dropdownValue = 'Select';
 class _Step1State extends State<Step1> {
   final _formKey = GlobalKey<FormState>();
-  Toast _toast = Toast();
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -80,6 +79,7 @@ class _Step1State extends State<Step1> {
                 color: Pelette.ColorPrimaryDark,
                 onPressed: (){
                   if(dropdownValue == 'Select'){
+                    Toast _toast = Toast();
                     _toast.overLay = false;
                     _toast.showOverLay('Please Select a type', Colors.white, Colors.black54, context);
                   }else{

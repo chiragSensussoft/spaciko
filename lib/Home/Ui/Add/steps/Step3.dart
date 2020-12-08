@@ -13,7 +13,6 @@ class Step3 extends StatefulWidget {
 
 class _Step3State extends State<Step3> {
   int isAllowVisitor = -1;
-  Toast _toast = Toast();
   int guest =0;
 
   @override
@@ -97,10 +96,9 @@ class _Step3State extends State<Step3> {
               minWidth: MediaQuery.of(context).size.width,
               color: Pelette.ColorPrimaryDark,
               onPressed: (){
-                if(isAllowVisitor==-1||guest==0) {
-                  setState(() {
-                    _toast.overLay = false;
-                  });
+                if(isAllowVisitor==-1||guest==0){
+                  Toast _toast = Toast();
+                  _toast.overLay = false;
                   _toast.showOverLay('Fill up First', Colors.white, Colors.black54, context);
                 }else{
                   widget.onChange(widget.curStep);

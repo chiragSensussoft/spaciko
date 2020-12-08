@@ -17,7 +17,6 @@ class _Step6State extends State<Step6> {
   bool cb3 = false;
   bool cb4 = false;
   bool cb5 = false;
-  Toast _toast = Toast();
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +42,10 @@ class _Step6State extends State<Step6> {
                 minWidth: MediaQuery.of(context).size.width,
                 color: Pelette.ColorPrimaryDark,
                 onPressed: (){
-                  if(cb1==false||cb2==false||cb3==false||cb4==false||cb5==false){
-                    setState(() {
-                      _toast.overLay = false;
-                    });
+                  if(cb1==false&&cb2==false&&cb3==false&&cb4==false&&cb5==false){
+                    Toast _toast = Toast();
+                    _toast.overLay = false;
                     _toast.showOverLay('Select one', Colors.white, Colors.black54, context);
-                  }else{
-                    widget.onChange(widget.curStep);
                   }
                 },
                 child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),

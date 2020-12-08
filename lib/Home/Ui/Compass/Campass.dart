@@ -193,8 +193,9 @@ class _CompassScreenState extends State<CompassScreen> {
           Stack(
               children: <Widget>[
 
-                (_lng!=null)?GoogleMap(
-            initialCameraPosition: CameraPosition(target: _lng,zoom: 4),
+                //(_lng!=null)?
+                GoogleMap(
+            initialCameraPosition: CameraPosition(target: LatLng(56.172249, 10.187372),zoom: 4),
             markers: Set.of(markers.values),
             onTap: (val){
               setState(() {
@@ -227,7 +228,7 @@ class _CompassScreenState extends State<CompassScreen> {
                  }
                });
             },
-          ):Center(child: CircularProgressIndicator(),),
+          ),//:Center(child: CircularProgressIndicator(),),
                 Visibility(
                   child: Container(
                     height: 228,

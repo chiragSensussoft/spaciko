@@ -13,7 +13,6 @@ class Step4 extends StatefulWidget {
 }
 
 class _Step4State extends State<Step4> {
-  Toast _toast = Toast();
   bool checkboxValue1 = false;
   bool checkboxValue2 = false;
   bool checkboxValue3 = false;
@@ -57,9 +56,8 @@ class _Step4State extends State<Step4> {
                 onPressed: (){
                   if(checkboxValue1== false&&checkboxValue2== false&&checkboxValue3== false&&checkboxValue4== false
                       &&checkboxValue5== false) {
-                    setState(() {
-                      _toast.overLay = false;
-                    });
+                    Toast _toast = Toast();
+                    _toast.overLay = false;
                     _toast.showOverLay('Select at least one', Colors.white, Colors.black54, context);
                   }else{
                     widget.onChange(widget.curStep);
@@ -88,7 +86,7 @@ class _Step4State extends State<Step4> {
               borderRadius: const BorderRadius.all(const Radius.circular(30)),
             ),
           ),
-          Text(text),
+          Text(text,overflow: TextOverflow.ellipsis),
         ],
       ),
       onTap: () {

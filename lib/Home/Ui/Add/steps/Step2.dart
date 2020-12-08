@@ -13,7 +13,6 @@ class Step2 extends StatefulWidget {
 
 class _Step2State extends State<Step2> {
   final _formKey = GlobalKey<FormState>();
-  Toast _toast = Toast();
 
   int isFurnished = 0;
   int isPrivate = 0;
@@ -173,7 +172,7 @@ class _Step2State extends State<Step2> {
                   ),
                 ),
                 Container(
-                  height: 70,
+                  height: 80,
                   margin:  EdgeInsets.all(10.0),
                   child:  Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -201,21 +200,24 @@ class _Step2State extends State<Step2> {
                         },
                       ),
                       GestureDetector(
-                        child: Row(
-                          children: [
-                            Container(margin: const EdgeInsets.only(top: 20),
-                              height: 20.0,
-                              width: 20.0,
-                              decoration:  BoxDecoration(
-                                color: isExperienced == -1
-                                    ? Pelette.ColorPrimaryDark
-                                    : Colors.white,
-                                borderRadius: const BorderRadius.all(const Radius.circular(30)),
-                              ),
+                        child :Container(
+                            child:  Row(
+                              children: [
+                                Container(margin: const EdgeInsets.only(top: 20),
+                                  height: 20.0,
+                                  width: 20.0,
+                                  decoration:  BoxDecoration(
+                                    color: isExperienced == -1
+                                        ? Pelette.ColorPrimaryDark
+                                        : Colors.white,
+                                    borderRadius: const BorderRadius.all(const Radius.circular(30)),
+                                  ),
+                                ),
+                                Container(margin: const EdgeInsets.only(top: 20),
+                                    width: 200,
+                                    child:Text('Yes,i\'m experienced with space hosting')),
+                              ],
                             ),
-                            Container(margin: const EdgeInsets.only(top: 20),
-                                child: Text('Yes,i\'m experienced with space hosting',overflow: TextOverflow.ellipsis,)),
-                          ],
                         ),
                         onTap: () {
                           setState(() {
@@ -237,9 +239,8 @@ class _Step2State extends State<Step2> {
                     color: Pelette.ColorPrimaryDark,
                     onPressed: (){
                       if(isFurnished==0||isExperienced==0||isPrivate==0){
-                        setState(() {
-                          _toast.overLay = false;
-                        });
+                        Toast _toast = Toast();
+                        _toast.overLay = false;
                         _toast.showOverLay('Fill up First', Colors.white, Colors.black54, context);
                       }else{
                         widget.onChange(widget.curStep);

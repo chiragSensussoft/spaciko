@@ -27,7 +27,6 @@ class _Step5State extends State<Step5> {
   Map<String,Marker> markers ={};
   Completer<GoogleMapController> _controller = Completer();
   final _formKey = GlobalKey<FormState>();
-  Toast _toast = Toast();
 
   _getCurrentLocation() {
     final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
@@ -145,15 +144,20 @@ class _Step5State extends State<Step5> {
               ),
               Container(margin: const EdgeInsets.only(top: 20,left: 10,right: 10),
                 height: 180,
-                child:(_lng!=null)?GoogleMap(initialCameraPosition: CameraPosition(target: _lng,zoom: 8),
+                child: GoogleMap(
+                  initialCameraPosition:
+                      CameraPosition(target: LatLng(21.1702, 72.8311), zoom: 8),
                   markers: Set.of(markers.values),
-                  onMapCreated: (GoogleMapController controller){
+                  onMapCreated: (GoogleMapController controller) {
                     _controller.complete(controller);
                     setState(() {
-                      markers['1'] = Marker(markerId: MarkerId('1'),position: _lng,icon: pinLocationIcon);
+                      markers['1'] = Marker(
+                          markerId: MarkerId('1'),
+                          position: LatLng(21.1702, 72.8311),
+                          icon: pinLocationIcon);
                     });
                   },
-                ):Center(child: CircularProgressIndicator(),),
+                ),
               ),
               Container(margin: const EdgeInsets.only(top: 10,left: 10,right: 10),
                 height: 40,
@@ -165,9 +169,8 @@ class _Step5State extends State<Step5> {
                     if(_formKey.currentState.validate()){
                       widget.onChange(widget.curStep);
                     }else{
-                      setState(() {
-                        _toast.overLay = false;
-                      });
+                      Toast _toast = Toast();
+                      _toast.overLay = false;
                       _toast.showOverLay('Fill up First', Colors.white, Colors.black54, context);
                     }
                   },
