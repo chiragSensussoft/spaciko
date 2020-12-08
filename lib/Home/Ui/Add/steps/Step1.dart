@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spaciko/widgets/Pelette.dart';
+import 'package:spaciko/widgets/Toast.dart';
 
 class Step1 extends StatefulWidget {
    int curStep;
@@ -11,74 +12,86 @@ class Step1 extends StatefulWidget {
   _Step1State createState() => _Step1State();
 }
 
-String dropdownValue = 'Good';
+String dropdownValue = 'Select';
 class _Step1State extends State<Step1> {
+  final _formKey = GlobalKey<FormState>();
+  Toast _toast = Toast();
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(padding: const EdgeInsets.only(left: 20,right: 20,top: 20),
-          child:  Text.rich(
-            TextSpan(text: 'Ready to Place your space in the spotlight?',style: TextStyle(color: Colors.black,fontSize: 16,fontFamily: 'poppins_medium')),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Container(padding: const EdgeInsets.only(left: 5,right: 5,top: 10),
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(text: 'With'),
-                TextSpan(text: ' Spaciko',style: TextStyle(color: Pelette.ColorPrimaryDark)),
-                TextSpan(text: ' each working space deserve a spacial care. following these steps will allow you to highlight each working space as a separate listing'),
-              ],
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Container(padding: const EdgeInsets.only(left: 20,right: 20,top: 30),
+              child:  Text.rich(
+                TextSpan(text: 'Ready to Place your space in the spotlight?',style: TextStyle(color: Colors.black,fontSize: 16,fontFamily: 'poppins_semibold')),
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Container(padding: const EdgeInsets.only(top: 30),
-          child: Text('What Type of space do you own?',style:TextStyle(color: Colors.black,fontSize: 15,fontFamily: 'poppins_medium'),),
-        ),
-        Container(margin: const EdgeInsets.only(left: 20,right: 20,top: 10),
-            width: MediaQuery.of(context).size.width,
-            height: 40,
-            decoration: BoxDecoration(
-                color: Pelette.ColorWhite,
-                borderRadius: BorderRadius.circular(26)
+            Container(padding: const EdgeInsets.only(left: 5,right: 5,top: 10),
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: 'With'),
+                    TextSpan(text: ' Spaciko',style: TextStyle(color: Pelette.ColorPrimaryDark)),
+                    TextSpan(text: ' each working space deserve a spacial care. following these steps will allow you to highlight each working space as a separate listing'),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            child:  Center(
-              child: DropdownButton(
-                value: dropdownValue,
-                underline: Container(height: 0,),
-                icon: Icon(Icons.arrow_drop_down,color: Colors.black,size: 28,),
-                onChanged: (String newValue) {
-                  setState(() {
-                    dropdownValue = newValue;
-                  });
+            Container(padding: const EdgeInsets.only(top: 30),
+              child: Text('What Type of space do you own?',style:TextStyle(color: Colors.black,fontSize: 15,fontFamily: 'poppins_semibold'),),
+            ),
+            Container(margin: const EdgeInsets.only(left: 20,right: 20,top: 20),
+                width: MediaQuery.of(context).size.width,
+                height: 40,
+                child:  Material(
+                  elevation: 4,
+                  borderRadius: BorderRadius.circular(26),
+                  child: Container(padding: const EdgeInsets.only(left: 20,right: 20),
+                    child: DropdownButton(
+                      isExpanded: true,
+                      value: dropdownValue,
+                      underline: Container(height: 0,),
+                      icon: Icon(Icons.arrow_drop_down,color: Colors.black,size: 28,),
+                      onChanged: (String newValue) {
+                        setState(() {
+                          dropdownValue = newValue;
+                        });
+                      },
+                      items: <String>['Select', 'Two', 'Free', 'Four']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                )
+            ),
+            Container(margin: const EdgeInsets.only(top: 50,left: 20,right: 20),
+              height: 40,
+              child: FlatButton(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                minWidth: MediaQuery.of(context).size.width,
+                color: Pelette.ColorPrimaryDark,
+                onPressed: (){
+                  if(dropdownValue == 'Select'){
+                    _toast.overLay = false;
+                    _toast.showOverLay('Please Select a type', Colors.white, Colors.black54, context);
+                  }else{
+                    widget.onChange(widget.curStep);
+                  }
                 },
-                items: <String>['Good', 'Two', 'Free', 'Four']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+                child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
               ),
             )
+          ],
         ),
-        Container(margin: const EdgeInsets.only(top: 140,left: 20,right: 20),
-          height: 40,
-          child: FlatButton(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-            minWidth: MediaQuery.of(context).size.width,
-            color: Pelette.ColorPrimaryDark,
-            onPressed: (){
-                widget.onChange(widget.curStep);
-                print(widget.curStep);
-            },
-            child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
-          ),
-        )
-      ],
+      ),
     );
   }
 }

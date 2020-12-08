@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spaciko/widgets/Pelette.dart';
+import 'package:spaciko/widgets/Toast.dart';
 
 class Step3 extends StatefulWidget {
   int curStep;
@@ -11,7 +12,15 @@ class Step3 extends StatefulWidget {
 }
 
 class _Step3State extends State<Step3> {
-  furnished _character;
+  int isAllowVisitor = -1;
+  Toast _toast = Toast();
+  int guest =0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -34,13 +43,20 @@ class _Step3State extends State<Step3> {
                         color: Pelette.ColorPrimaryDark
                     ),
                   ),
+                  onTap: (){
+                    setState(() {
+                      if(guest>0){
+                        guest -= 1;
+                      }
+                    });
+                  },
                 ),
                 Container(
                   alignment: Alignment.center,
                   width: 100,
                   height: 35,
                   color: Colors.white,
-                  child: Text('1',textAlign: TextAlign.center,style: TextStyle(color: Colors.black),),
+                  child: Text(guest.toString(),textAlign: TextAlign.center,style: TextStyle(color: Colors.black),),
                 ),
                 GestureDetector(
                   child: Container(
@@ -52,6 +68,11 @@ class _Step3State extends State<Step3> {
                         color: Pelette.ColorPrimaryDark
                     ),
                   ),
+                  onTap: (){
+                    setState(() {
+                      guest += 1;
+                    });
+                  },
                 ),
               ],
             ),
@@ -60,30 +81,12 @@ class _Step3State extends State<Step3> {
             child: Text('Do you allow Visitors during the rent',style: TextStyle(fontSize: 15,fontFamily: 'poppins_semibold',color: Colors.black),),
           ),
           Container(
-            width: MediaQuery.of(context).size.width,
-            child: Row(
+            margin:  EdgeInsets.all(10.0),
+            child:  Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Radio(
-                  value: furnished.Yes,
-                  groupValue: _character,
-                  onChanged: (furnished value) {
-                    setState(() {
-                      _character = value;
-                    });
-                  },
-                ),
-                Text('Yes'),
-                Radio(
-                  value: furnished.No,
-                  groupValue: _character,
-                  onChanged: (furnished value) {
-                    setState(() {
-                      _character = value;
-                    });
-                  },
-                ),
-                Text('No'),
+              children: <Widget>[
+                _customRadio(1, 'Yes',(val)=>setState(()=>isAllowVisitor= val)),
+                _customRadio(0, 'No',(val)=>setState(()=>isAllowVisitor= val)),
               ],
             ),
           ),
@@ -94,8 +97,14 @@ class _Step3State extends State<Step3> {
               minWidth: MediaQuery.of(context).size.width,
               color: Pelette.ColorPrimaryDark,
               onPressed: (){
-                widget.onChange(widget.curStep);
-                print(widget.curStep);
+                if(isAllowVisitor==-1||guest==0) {
+                  setState(() {
+                    _toast.overLay = false;
+                  });
+                  _toast.showOverLay('Fill up First', Colors.white, Colors.black54, context);
+                }else{
+                  widget.onChange(widget.curStep);
+                }
               },
               child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
             ),
@@ -104,6 +113,35 @@ class _Step3State extends State<Step3> {
       ),
     );
   }
+
+  Widget _customRadio(int val,String text,Function onTap){
+    return GestureDetector(
+      child: Row(
+        children: [
+          Container(margin: const EdgeInsets.only(right: 2,left: 8),
+            height: 20.0,
+            width: 20.0,
+            decoration:  BoxDecoration(
+              color: val == isAllowVisitor
+                  ? Pelette.ColorPrimaryDark
+                  : Colors.white,
+              borderRadius: const BorderRadius.all(const Radius.circular(30)),
+            ),
+          ),
+          Text(text),
+        ],
+      ),
+      onTap: () {
+        setState(() {
+          if(text=='Yes'){
+            onTap(1);
+          }
+          else{
+            onTap(0);
+          }
+        });
+      },
+    );
+  }
 }
-enum furnished { Yes, No }
 

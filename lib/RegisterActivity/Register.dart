@@ -155,7 +155,6 @@ class _RegisterState extends State<Register> {
                               return null;
                             }
                           });
-
                         },
                         child: checkboxValue
                             ? Icon(
@@ -171,8 +170,8 @@ class _RegisterState extends State<Register> {
                       ),
                       SizedBox(width: 5),
 
-                      new Expanded(
-                          child: new RichText(
+                      Expanded(
+                          child: RichText(
                             text: TextSpan(
                               children: [
                                 TextSpan(text: 'By signing up spaciko\'s ',style: TextStyle(color: Colors.black)),
@@ -197,7 +196,7 @@ class _RegisterState extends State<Register> {
                       color: Pelette.ColorPrimaryDark,
                       borderRadius: BorderRadius.circular(25),
                       child: FlatButton(
-                      onPressed: (){
+                        onPressed: (){
                           if(_formKey.currentState.validate()){
                               var toast = Toast();
                               toast.overLay = false;

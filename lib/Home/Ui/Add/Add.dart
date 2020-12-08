@@ -4,6 +4,8 @@ import 'package:spaciko/Home/Ui/Add/steps/Step1.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step2.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step3.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step4.dart';
+import 'package:spaciko/Home/Ui/Add/steps/Step5.dart';
+import 'package:spaciko/Home/Ui/Add/steps/Step6.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
 class Add extends StatelessWidget {
@@ -132,6 +134,12 @@ class _AddScreenState extends State<AddScreen>{
     }
     if(_curStep==3){
       return Step4(curStep: 4,onChange: (val) => setState(()=>_curStep = val));
+    }
+    if(_curStep==4){
+      return Step5(curStep: 5,onChange: (val) => setState(()=>_curStep = val));
+    }
+    if(_curStep==5){
+      return Step6(curStep: 6,onChange: (val) => setState(()=>_curStep = val));
     }
   }
 
