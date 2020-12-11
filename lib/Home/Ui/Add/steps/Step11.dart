@@ -32,7 +32,8 @@ class _Step11State extends State<Step11> {
     return list.map((e) => DropdownMenuItem(value: e,child: Text(e),)).toList();
   }
   List<DropdownMenuItem<String>> _listHours(){
-
+    st<String> list =['All Over','Set Hours'];
+    return list.map((e) => DropdownMenuItem(value: e,child: Text(e),)).toList();
   }
 
   @override
