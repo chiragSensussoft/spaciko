@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step1.dart';
+import 'package:spaciko/Home/Ui/Add/steps/Step11.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step2.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step3.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step4.dart';
@@ -101,30 +102,9 @@ class _AddScreenState extends State<AddScreen>{
     return list;
   }
 
-  Widget _pageStep() {
-    return PageView.builder(
-      itemCount: _widgetTransition.length,
-      itemBuilder: (_,index){
-        return Container(
-          child: _widgetTransition.elementAt(index),
-        );
-      },
-       onPageChanged: (int index) => setState(() => _curStep = index),
-    );
-  }
-
-  List<Widget> _widgetTransition = [
-    Container(
-      child: Step1(),
-    ),
-    Container(
-      child: Step2(),
-    ),
-  ];
-
   Widget setps() {
     if(_curStep ==0){
-      return Step1(curStep: 1,onChange: (val) => setState(()=>_curStep = val));
+      return Step11(curStep: 1,onChange: (val) => setState(()=>_curStep = val));
     }
     if(_curStep==1){
       return Step2(curStep: 2,onChange: (val) => setState(()=>_curStep = val));
