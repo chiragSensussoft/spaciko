@@ -23,7 +23,7 @@ class _TCState extends State<TC> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     backgroundColor: Pelette.ColorPrimaryDark,
+     backgroundColor: AppColors.colorPrimaryDark,
       body: Container(margin: const EdgeInsets.only(top: 20),
           decoration: BoxDecoration(
               color: Colors.white,

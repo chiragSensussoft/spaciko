@@ -39,7 +39,7 @@ class _Step3State extends State<Step3> {
                     child: Icon(Icons.remove,color: Colors.white,),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(topLeft: Radius.circular(30),bottomLeft: Radius.circular(30)),
-                        color: Pelette.ColorPrimaryDark
+                        color: AppColors.colorPrimaryDark
                     ),
                   ),
                   onTap: (){
@@ -64,7 +64,7 @@ class _Step3State extends State<Step3> {
                     child: Icon(Icons.add,color: Colors.white,),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(topRight: Radius.circular(30),bottomRight: Radius.circular(30)),
-                        color: Pelette.ColorPrimaryDark
+                        color: AppColors.colorPrimaryDark
                     ),
                   ),
                   onTap: (){
@@ -94,7 +94,7 @@ class _Step3State extends State<Step3> {
             child: FlatButton(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
               minWidth: MediaQuery.of(context).size.width,
-              color: Pelette.ColorPrimaryDark,
+              color: AppColors.colorPrimaryDark,
               onPressed: (){
                 if(isAllowVisitor==-1||guest==0){
                   Toast _toast = Toast();
@@ -104,7 +104,7 @@ class _Step3State extends State<Step3> {
                   widget.onChange(widget.curStep);
                 }
               },
-              child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
+              child: Text('Continue',style: TextStyle(color: AppColors.colorWhite),),
             ),
           )
         ],
@@ -121,7 +121,7 @@ class _Step3State extends State<Step3> {
             width: 20.0,
             decoration:  BoxDecoration(
               color: val == isAllowVisitor
-                  ? Pelette.ColorPrimaryDark
+                  ? AppColors.colorPrimaryDark
                   : Colors.white,
               borderRadius: const BorderRadius.all(const Radius.circular(30)),
             ),

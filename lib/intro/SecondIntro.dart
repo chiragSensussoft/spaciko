@@ -25,7 +25,7 @@ class _IntroState extends State<Intro> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(0),
         child: AppBar(
-          backgroundColor: Pelette.ColorPrimaryDark,
+          backgroundColor: AppColors.colorPrimaryDark,
         ),
       ),
       body: Container(

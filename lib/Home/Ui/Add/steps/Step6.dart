@@ -40,15 +40,17 @@ class _Step6State extends State<Step6> {
               child: FlatButton(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 minWidth: MediaQuery.of(context).size.width,
-                color: Pelette.ColorPrimaryDark,
+                color: AppColors.colorPrimaryDark,
                 onPressed: (){
                   if(cb1==false&&cb2==false&&cb3==false&&cb4==false&&cb5==false){
                     Toast _toast = Toast();
                     _toast.overLay = false;
                     _toast.showOverLay('Select one', Colors.white, Colors.black54, context);
+                  }else{
+                    widget.onChange(widget.curStep);
                   }
                 },
-                child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
+                child: Text('Continue',style: TextStyle(color: AppColors.colorWhite),),
               ),
             ),
           ],
@@ -65,7 +67,7 @@ class _Step6State extends State<Step6> {
             width: 20.0,
             decoration:  BoxDecoration(
               color: cb
-                  ? Pelette.ColorPrimaryDark
+                  ? AppColors.colorPrimaryDark
                   : Colors.white,
               borderRadius: const BorderRadius.all(const Radius.circular(30)),
             ),

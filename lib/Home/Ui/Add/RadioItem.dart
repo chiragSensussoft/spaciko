@@ -19,7 +19,7 @@ class RadioItem extends StatelessWidget {
             width: 20.0,
             decoration: new BoxDecoration(
               color: _item.isSelected
-                  ? Pelette.ColorPrimaryDark
+                  ? AppColors.colorPrimaryDark
                   : Colors.white,
               border: new Border.all(
                   width: 1.0,

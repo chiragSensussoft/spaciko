@@ -45,7 +45,7 @@ class _Step2State extends State<Step2> {
                               height: 20.0,
                               width: 20.0,
                               decoration:  BoxDecoration(
-                                color: isFurnished == 1 ? Pelette.ColorPrimaryDark : Colors.white,
+                                color: isFurnished == 1 ? AppColors.colorPrimaryDark : Colors.white,
                                 borderRadius: const BorderRadius.all(const Radius.circular(30)),
                               ),
                             ),
@@ -65,7 +65,7 @@ class _Step2State extends State<Step2> {
                               height: 20.0,
                               width: 20.0,
                               decoration:  BoxDecoration(
-                                color: isFurnished == -1 ? Pelette.ColorPrimaryDark : Colors.white,
+                                color: isFurnished == -1 ? AppColors.colorPrimaryDark : Colors.white,
                                 borderRadius: const BorderRadius.all(const Radius.circular(30)),
                               ),
                             ),
@@ -123,7 +123,7 @@ class _Step2State extends State<Step2> {
                               width: 20.0,
                               decoration:  BoxDecoration(
                                 color: isPrivate == 1
-                                    ? Pelette.ColorPrimaryDark
+                                    ? AppColors.colorPrimaryDark
                                     : Colors.white,
                                 borderRadius: const BorderRadius.all(const Radius.circular(30)),
                               ),
@@ -145,7 +145,7 @@ class _Step2State extends State<Step2> {
                               width: 20.0,
                               decoration:  BoxDecoration(
                                 color: isPrivate == -1
-                                    ? Pelette.ColorPrimaryDark
+                                    ? AppColors.colorPrimaryDark
                                     : Colors.white,
                                 borderRadius: const BorderRadius.all(const Radius.circular(30)),
                               ),
@@ -185,7 +185,7 @@ class _Step2State extends State<Step2> {
                               width: 20.0,
                               decoration:  BoxDecoration(
                                 color: isExperienced == 1
-                                    ? Pelette.ColorPrimaryDark
+                                    ? AppColors.colorPrimaryDark
                                     : Colors.white,
                                 borderRadius: const BorderRadius.all(const Radius.circular(30)),
                               ),
@@ -208,7 +208,7 @@ class _Step2State extends State<Step2> {
                                   width: 20.0,
                                   decoration:  BoxDecoration(
                                     color: isExperienced == -1
-                                        ? Pelette.ColorPrimaryDark
+                                        ? AppColors.colorPrimaryDark
                                         : Colors.white,
                                     borderRadius: const BorderRadius.all(const Radius.circular(30)),
                                   ),
@@ -236,7 +236,7 @@ class _Step2State extends State<Step2> {
                   child: FlatButton(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                     minWidth: MediaQuery.of(context).size.width,
-                    color: Pelette.ColorPrimaryDark,
+                    color: AppColors.colorPrimaryDark,
                     onPressed: (){
                       if(isFurnished==0||isExperienced==0||isPrivate==0){
                         Toast _toast = Toast();
@@ -246,7 +246,7 @@ class _Step2State extends State<Step2> {
                         widget.onChange(widget.curStep);
                       }
                     },
-                    child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
+                    child: Text('Continue',style: TextStyle(color: AppColors.colorWhite),),
                   ),
                 ),
               ],

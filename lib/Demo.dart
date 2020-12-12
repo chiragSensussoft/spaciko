@@ -1,115 +1,162 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-void main() => runApp(MyApp());
+import 'package:intl/intl.dart';
 
-class MyApp extends StatelessWidget {
+class DateTimePicker extends StatefulWidget {
+  @override
+  _DateTimePickerState createState() => _DateTimePickerState();
+}
+
+class _DateTimePickerState extends State<DateTimePicker> {
+  double _height;
+  double _width;
+
+  String _setTime, _setDate;
+
+  String _hour, _minute, _time;
+
+  String dateTime;
+
+  DateTime selectedDate = DateTime.now();
+
+  TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
+
+  TextEditingController _dateController = TextEditingController();
+  TextEditingController _timeController = TextEditingController();
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        initialDatePickerMode: DatePickerMode.day,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2101));
+    if (picked != null)
+      setState(() {
+        selectedDate = picked;
+        _dateController.text = DateFormat.yMd().format(selectedDate);
+      });
+  }
+
+  Future<Null> _selectTime(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+    );
+    if (picked != null)
+      setState(() {
+        selectedTime = picked;
+        _hour = selectedTime.hour.toString();
+        _minute = selectedTime.minute.toString();
+        _time = _hour + ' : ' + _minute;
+        _timeController.text = _time;
+      });
+  }
+
+  @override
+  void initState() {
+    _dateController.text = DateFormat.yMd().format(DateTime.now());
+
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: AccountPage(),
+    _height = MediaQuery.of(context).size.height;
+    _width = MediaQuery.of(context).size.width;
+    dateTime = DateFormat.yMd().format(DateTime.now());
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Date time picker'),
+      ),
+      body: Container(
+        width: _width,
+        height: _height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                Text(
+                  'Choose Date',
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5),
+                ),
+                InkWell(
+                  onTap: () {
+                    _selectDate(context);
+                  },
+                  child: Container(
+                    width: _width / 1.7,
+                    height: _height / 9,
+                    margin: EdgeInsets.only(top: 30),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(color: Colors.grey[200]),
+                    child: TextFormField(
+                      style: TextStyle(fontSize: 40),
+                      textAlign: TextAlign.center,
+                      enabled: false,
+                      keyboardType: TextInputType.text,
+                      controller: _dateController,
+                      onSaved: (String val) {
+                        _setDate = val;
+                      },
+                      decoration: InputDecoration(
+                          disabledBorder:
+                          UnderlineInputBorder(borderSide: BorderSide.none),
+                          // labelText: 'Time',
+                          contentPadding: EdgeInsets.only(top: 0.0)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              children: <Widget>[
+                Text(
+                  'Choose Time',
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5),
+                ),
+                InkWell(
+                  onTap: () {
+                    _selectTime(context);
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(top: 30),
+                    width: _width / 1.7,
+                    height: _height / 9,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(color: Colors.grey[200]),
+                    child: TextFormField(
+                      style: TextStyle(fontSize: 40),
+                      textAlign: TextAlign.center,
+                      onSaved: (String val) {
+                        _setTime = val;
+                      },
+                      enabled: false,
+                      keyboardType: TextInputType.text,
+                      controller: _timeController,
+                      decoration: InputDecoration(
+                          disabledBorder:
+                          UnderlineInputBorder(borderSide: BorderSide.none),
+                          // labelText: 'Time',
+                          contentPadding: EdgeInsets.all(5)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
-}
-
-class AccountPage extends StatefulWidget {
-  @override
-  _AccountPageState createState() => new _AccountPageState();
-}
-
-class _AccountPageState extends State<AccountPage> {
-   double _height;
-   double _width;
-   BoxDecoration decoration;
-   List<String> _stepsText = ['1',',2','3','4','5','6'];
-   int _curStep;
-   Color _activeColor = Colors.yellow;
-   Color _inactiveColor = Colors.cyanAccent;
-   double _dotRadius =  30;
-   EdgeInsets padding;
-   double lineHeight;
-   TextStyle _headerStyle;
-   TextStyle _stepStyle = TextStyle(color: Colors.black);
-   List<Widget> _buildDots() {
-
-    var wids = <Widget>[];
-    _stepsText.asMap().forEach((i, text) {
-      var circleColor = (i == 0 || _curStep > i + 1)
-          ? _activeColor
-          : _inactiveColor;
-
-      var lineColor = _curStep > i + 1
-          ? _activeColor
-          : _inactiveColor;
-
-      wids.add(CircleAvatar(
-        radius: _dotRadius,
-        backgroundColor: circleColor,
-      ));
-
-      //add a line separator
-      //0-------0--------0
-      if (i != _stepsText.length - 1) {
-        wids.add(
-            Expanded(
-                child: Container(height: lineHeight, color: lineColor,)
-            )
-        );
-      }
-    });
-
-    return wids;
-  }
-
-   List<Widget> _buildText() {
-     var wids = <Widget>[];
-     _stepsText.asMap().forEach((i, text) {
-
-       wids.add(Text(text, style: _stepStyle));
-     });
-
-     return wids;
-   }
-   @override
-   Widget build(BuildContext context) {
-     return Container(
-         padding: padding,
-         height: this._height,
-         width: this._width,
-         decoration: this.decoration,
-         child: Column(
-           children: <Widget>[
-             Container(
-                 child: Center(
-                     child: RichText(
-                         text: TextSpan(
-                             children: [
-                               TextSpan(
-                                 text: (_curStep).toString(),
-                                 style: _headerStyle.copyWith(
-                                   color: _activeColor,//this is always going to be active
-                                 ),
-                               ),
-                               TextSpan(
-                                 text: " / " + _stepsText.length.toString(),
-                                 style: _headerStyle.copyWith(
-                                   color: _curStep == _stepsText.length
-                                       ? _activeColor
-                                       : _inactiveColor,
-                                 ),
-                               ),
-                             ]
-                         )
-                     )
-                 )
-             ),
-             Row(
-               children: _buildDots(),
-             ),
-             SizedBox(height: 10,),
-             Row(
-               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-               children: _buildText(),
-             )
-           ],
-         ));
-   }
 }

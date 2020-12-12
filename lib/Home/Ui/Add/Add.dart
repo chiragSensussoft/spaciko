@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:spaciko/Home/Ui/Add/steps/Publish.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step1.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step11.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step2.dart';
@@ -23,13 +24,12 @@ class AddScreen extends StatefulWidget{
 
 class _AddScreenState extends State<AddScreen>{
   List<String> _stepText = ['1','2','3','4','5','6'];
-  var activeColor = Pelette.ColorPrimaryDark;
-  var inActiveColor = Pelette.colorGreenTrans;
-  int _curStep =0;
+  var activeColor = AppColors.colorPrimaryDark;
+  var inActiveColor = AppColors.colorGreenTrans;
+  int _curStep =6;
   @override
   void initState() {
     step();
-    //_pageStep();
     super.initState();
   }
 
@@ -37,22 +37,31 @@ class _AddScreenState extends State<AddScreen>{
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Pelette.ColorPrimaryDark,
+        color: AppColors.colorPrimaryDark,
         child: Column(
           children: [
-            Container(
-              color: Pelette.ColorPrimaryDark,
+            Container(padding: const EdgeInsets.only(left: 15),
+              alignment: Alignment.centerLeft,
+              color: AppColors.colorPrimaryDark,
               height: MediaQuery.of(context).size.height * 0.16,
+              child: GestureDetector(
+                child: Icon(Icons.arrow_back_ios_rounded,color: Colors.white,),
+                onTap: (){
+                  setState(() {
+                    _curStep >0? _curStep -=1: null;
+                  });
+                },
+              )
             ),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                    color: Pelette.colorLightBlue50,
+                    color: AppColors.colorLightBlue50,
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
                 ),
                 child: Container(margin: const EdgeInsets.only(left: 20,right: 20,top: 10),
                   width: MediaQuery.of(context).size.width,
-                  child: Column(
+                  child:_curStep!=6?Column(
                     children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,7 +71,7 @@ class _AddScreenState extends State<AddScreen>{
                         child: setps(),
                       )
                     ],
-                  )
+                  ): Publish(),
                 ),
               ),
             )
@@ -95,7 +104,7 @@ class _AddScreenState extends State<AddScreen>{
         list.add(Expanded(
             child: Container(
               height: 2,
-              color: Pelette.ColorPrimaryDark,
+              color: AppColors.colorPrimaryDark,
             )));
       }
     });
@@ -104,7 +113,7 @@ class _AddScreenState extends State<AddScreen>{
 
   Widget setps() {
     if(_curStep ==0){
-      return Step11(curStep: 1,onChange: (val) => setState(()=>_curStep = val));
+      return Step1(curStep: 1,onChange: (val) => setState(()=>_curStep = val));
     }
     if(_curStep==1){
       return Step2(curStep: 2,onChange: (val) => setState(()=>_curStep = val));
@@ -122,5 +131,4 @@ class _AddScreenState extends State<AddScreen>{
       return Step6(curStep: 6,onChange: (val) => setState(()=>_curStep = val));
     }
   }
-
 }

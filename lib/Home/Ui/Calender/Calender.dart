@@ -13,18 +13,18 @@ class _CalenderScreenState extends State<CalenderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Pelette.ColorPrimaryDark,
+        color: AppColors.colorPrimaryDark,
         child: Column(
           children: [
             Container(
               height: MediaQuery.of(context).size.height *0.10,
-              color: Pelette.ColorPrimaryDark,
+              color: AppColors.colorPrimaryDark,
               child: Center(
                 child: Container(
                   width: 150,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Pelette.ColorWhite,
+                    color: AppColors.colorWhite,
                     borderRadius: BorderRadius.circular(26)
                   ),
                   child:  Center(

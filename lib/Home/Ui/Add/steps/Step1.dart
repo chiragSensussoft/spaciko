@@ -33,7 +33,7 @@ class _Step1State extends State<Step1> {
                 TextSpan(
                   children: [
                     TextSpan(text: 'With'),
-                    TextSpan(text: ' Spaciko',style: TextStyle(color: Pelette.ColorPrimaryDark)),
+                    TextSpan(text: ' Spaciko',style: TextStyle(color: AppColors.colorPrimaryDark)),
                     TextSpan(text: ' each working space deserve a spacial care. following these steps will allow you to highlight each working space as a separate listing'),
                   ],
                 ),
@@ -76,7 +76,7 @@ class _Step1State extends State<Step1> {
               child: FlatButton(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 minWidth: MediaQuery.of(context).size.width,
-                color: Pelette.ColorPrimaryDark,
+                color: AppColors.colorPrimaryDark,
                 onPressed: (){
                   if(dropdownValue == 'Select'){
                     Toast _toast = Toast();
@@ -86,7 +86,7 @@ class _Step1State extends State<Step1> {
                     widget.onChange(widget.curStep);
                   }
                 },
-                child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
+                child: Text('Continue',style: TextStyle(color: AppColors.colorWhite),),
               ),
             )
           ],

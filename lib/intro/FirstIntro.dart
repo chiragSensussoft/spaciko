@@ -49,7 +49,7 @@ class _IntroState extends StatelessWidget{
                           child: Text.rich(
                             TextSpan(
                                 children: <TextSpan>[
-                                  TextSpan(text: 'Spaciko',style: TextStyle(color: Pelette.ColorPrimaryDark,fontSize: 18,fontWeight: FontWeight.w600)),
+                                  TextSpan(text: 'Spaciko',style: TextStyle(color: AppColors.colorPrimaryDark,fontSize: 18,fontWeight: FontWeight.w600)),
                                   TextSpan(text: ',Setting new Standards on leasing a Private Working space!',style: TextStyle(color: Colors.black87,fontSize: 18))
                                 ],
                             ),

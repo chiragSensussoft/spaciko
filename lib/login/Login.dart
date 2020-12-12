@@ -33,7 +33,7 @@ class _MyLoginState extends State<MyLogin> {
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(0),
           child: AppBar(
-            backgroundColor: Pelette.ColorPrimaryDark,
+            backgroundColor: AppColors.colorPrimaryDark,
           )
       ),
       body: Container(
@@ -176,7 +176,7 @@ class _MyLoginState extends State<MyLogin> {
                                 color: Colors.black,
                                 fontWeight: FontWeight.w500)),
                             TextSpan(text: 'Register', style: TextStyle(
-                                color: Pelette.ColorPrimaryDark,
+                                color: AppColors.colorPrimaryDark,
                                 fontWeight: FontWeight.w500),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {

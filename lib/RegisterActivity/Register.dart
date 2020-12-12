@@ -34,7 +34,7 @@ class _RegisterState extends State<Register> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(0),
         child: AppBar(
-          backgroundColor: Pelette.ColorPrimaryDark,
+          backgroundColor: AppColors.colorPrimaryDark,
         ),
       ),
       body: Container(
@@ -159,7 +159,7 @@ class _RegisterState extends State<Register> {
                         child: checkboxValue
                             ? Icon(
                           Icons.radio_button_checked,
-                          color: Pelette.ColorPrimaryDark,
+                          color: AppColors.colorPrimaryDark,
                           size: 20,
                         )
                             : Icon(
@@ -175,7 +175,7 @@ class _RegisterState extends State<Register> {
                             text: TextSpan(
                               children: [
                                 TextSpan(text: 'By signing up spaciko\'s ',style: TextStyle(color: Colors.black)),
-                                TextSpan(text: 'Terms and Condition,',style: TextStyle(color: Pelette.ColorPrimaryDark, fontWeight: FontWeight.bold)
+                                TextSpan(text: 'Terms and Condition,',style: TextStyle(color: AppColors.colorPrimaryDark, fontWeight: FontWeight.bold)
                                 ,recognizer: TapGestureRecognizer()
                                     ..onTap =(){
                                         Navigator.push(context, MaterialPageRoute(
@@ -193,7 +193,7 @@ class _RegisterState extends State<Register> {
                 ),
                 Container(margin: const EdgeInsets.only(top: 10,left: 20,right: 20),
                   child: Material(
-                      color: Pelette.ColorPrimaryDark,
+                      color: AppColors.colorPrimaryDark,
                       borderRadius: BorderRadius.circular(25),
                       child: FlatButton(
                         onPressed: (){
@@ -238,7 +238,7 @@ class _RegisterState extends State<Register> {
                     text: TextSpan(
                       children: [
                         TextSpan(text: 'Already have an account? ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w300,fontSize: 15)),
-                        TextSpan(text: 'Log In',style: TextStyle(color: Pelette.ColorPrimaryDark,fontWeight: FontWeight.w400,fontSize: 17)
+                        TextSpan(text: 'Log In',style: TextStyle(color: AppColors.colorPrimaryDark,fontWeight: FontWeight.w400,fontSize: 17)
                           ,recognizer: TapGestureRecognizer()
                             ..onTap =(){
                                 Navigator.push(context, MaterialPageRoute(

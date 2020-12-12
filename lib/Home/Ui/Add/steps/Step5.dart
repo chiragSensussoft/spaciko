@@ -164,7 +164,7 @@ class _Step5State extends State<Step5> {
                 child: FlatButton(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                   minWidth: MediaQuery.of(context).size.width,
-                  color: Pelette.ColorPrimaryDark,
+                  color: AppColors.colorPrimaryDark,
                   onPressed: (){
                     if(_formKey.currentState.validate()){
                       widget.onChange(widget.curStep);
@@ -174,7 +174,7 @@ class _Step5State extends State<Step5> {
                       _toast.showOverLay('Fill up First', Colors.white, Colors.black54, context);
                     }
                   },
-                  child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
+                  child: Text('Continue',style: TextStyle(color: AppColors.colorWhite),),
                 ),
               ),
             ],

@@ -40,7 +40,7 @@ class _MyHomeState extends State<MyHome> {
       appBar:Responsive.isSmallScreen(context) ? PreferredSize(
        preferredSize: Size.fromHeight(0),
         child: AppBar(
-          backgroundColor: Pelette.ColorPrimaryDark,
+          backgroundColor: AppColors.colorPrimaryDark,
         ),
       )
       :PreferredSize(

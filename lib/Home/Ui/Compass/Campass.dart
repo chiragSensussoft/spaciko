@@ -130,7 +130,7 @@ class _CompassScreenState extends State<CompassScreen> {
                                 child: Card(
                                   elevation: 0.5,
                                   child: TextFormField(
-                                    cursorColor: Pelette.ColorPrimaryDark,
+                                    cursorColor: AppColors.colorPrimaryDark,
                                     decoration: InputDecoration(
                                       prefixIcon: Container(margin: const EdgeInsets.only(left: 10),
                                         child: Image(image: AssetImage('image/ic_search_grey_25.png'),height: 30,width: 30,),),
@@ -258,7 +258,7 @@ class _CompassScreenState extends State<CompassScreen> {
                                         checkList[index].isChecked
                                             ? Icon(
                                           Icons.check_circle,
-                                          color: Pelette.ColorPrimaryDark,
+                                          color: AppColors.colorPrimaryDark,
                                           size: 25,
                                         )
                                             : Icon(
@@ -278,7 +278,7 @@ class _CompassScreenState extends State<CompassScreen> {
                         Container(
                           height: 50,
                           width: MediaQuery.of(context).size.width,
-                          color: Pelette.ColorPrimaryDark,
+                          color: AppColors.colorPrimaryDark,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -296,7 +296,7 @@ class _CompassScreenState extends State<CompassScreen> {
                               Container(margin: const EdgeInsets.only(right: 5),
                                 child: FlatButton(
                                   color: Colors.white,
-                                  child: Text('Done',style: TextStyle(color:Pelette.ColorPrimaryDark,fontSize: 17),),
+                                  child: Text('Done',style: TextStyle(color:AppColors.colorPrimaryDark,fontSize: 17),),
                                   onPressed: (){
                                     setState(() {
                                       blankBtnFilterList.remove('3');
@@ -416,7 +416,7 @@ class _CompassScreenState extends State<CompassScreen> {
                                       margin: EdgeInsets.only(top: 2, left: 3, right: 3),
                                       height: 2,
                                       width: MediaQuery.of(context).size.width,
-                                      color: Pelette.ColorPrimaryDark,
+                                      color: AppColors.colorPrimaryDark,
                                     )
                                   ],
                                 ),
@@ -424,18 +424,17 @@ class _CompassScreenState extends State<CompassScreen> {
                             ),
                           );
                         },
-
                       ),
                     ),
                   ),
                 ),
-
               ],
           ),
        ),
     );
   }
 }
+
 List<checkItem> checkList = <checkItem>[
    checkItem('Meeting Room'),
    checkItem('Open Space'),

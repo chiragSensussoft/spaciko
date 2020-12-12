@@ -52,7 +52,7 @@ class _Step4State extends State<Step4> {
               child: FlatButton(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 minWidth: MediaQuery.of(context).size.width,
-                color: Pelette.ColorPrimaryDark,
+                color: AppColors.colorPrimaryDark,
                 onPressed: (){
                   if(checkboxValue1== false&&checkboxValue2== false&&checkboxValue3== false&&checkboxValue4== false
                       &&checkboxValue5== false) {
@@ -63,7 +63,7 @@ class _Step4State extends State<Step4> {
                     widget.onChange(widget.curStep);
                   }
                 },
-                child: Text('Continue',style: TextStyle(color: Pelette.ColorWhite),),
+                child: Text('Continue',style: TextStyle(color: AppColors.colorWhite),),
               ),
             )
           ],
@@ -81,7 +81,7 @@ class _Step4State extends State<Step4> {
             width: 20.0,
             decoration:  BoxDecoration(
               color: cb
-                  ? Pelette.ColorPrimaryDark
+                  ? AppColors.colorPrimaryDark
                   : Colors.white,
               borderRadius: const BorderRadius.all(const Radius.circular(30)),
             ),
