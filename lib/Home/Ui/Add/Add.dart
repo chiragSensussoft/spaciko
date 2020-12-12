@@ -43,7 +43,7 @@ class _AddScreenState extends State<AddScreen>{
             Container(padding: const EdgeInsets.only(left: 15),
               alignment: Alignment.centerLeft,
               color: AppColors.colorPrimaryDark,
-              height: MediaQuery.of(context).size.height * 0.16,
+              height: MediaQuery.of(context).size.height * 0.14,
               child: GestureDetector(
                 child: Icon(Icons.arrow_back_ios_rounded,color: Colors.white,),
                 onTap: (){

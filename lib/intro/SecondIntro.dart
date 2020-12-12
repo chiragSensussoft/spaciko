@@ -25,8 +25,8 @@ class _IntroState extends State<Intro> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(0),
         child: AppBar(
-          backgroundColor: AppColors.colorPrimaryDark,
-        ),
+          backgroundColor: Colors.black,
+        )
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
