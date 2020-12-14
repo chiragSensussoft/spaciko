@@ -30,7 +30,7 @@ class MyHome extends StatefulWidget {
 }
 
 class _MyHomeState extends State<MyHome> {
-  int selectedIndex=2;
+  int selectedIndex=1;
   var toast = Toast();
 
   @override
@@ -57,7 +57,7 @@ class _MyHomeState extends State<MyHome> {
            setState(() {
              selectedIndex = val;
            });
-         },),
+         },defaultSelectedIndex: 1,),
        ) : null,
     );
   }

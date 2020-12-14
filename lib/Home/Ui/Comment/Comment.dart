@@ -5,6 +5,8 @@ import 'package:spaciko/widgets/Pelette.dart';
 
 import 'Widget/Bubble.dart';
 
+void main() => runApp(CommentScreen());
+
 class CommentScreen extends StatefulWidget {
   @override
   _CommentScreenState createState() => _CommentScreenState();
@@ -16,10 +18,7 @@ class _CommentScreenState extends State<CommentScreen> {
   String msg;
   TextEditingController _controller = TextEditingController();
 
-  List<String> _stepText = ['1','2','3','4','5','6'];
-  var activeColor = AppColors.colorPrimaryDark;
-  var inActiveColor = AppColors.colorGreenTrans;
-  int _curStep =0;
+  int _curStep =1;
   bool title = false;
   bool btn = true;
 
