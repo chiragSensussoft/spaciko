@@ -48,6 +48,10 @@ class _CommentScreenState extends State<CommentScreen> {
                         onTap: (){
                           title = false;
                           btn = true;
+                          setState(() {
+                           _curStep =0;
+                          });
+                          print(_curStep);
                         },
                       ),
                       Visibility(
@@ -67,6 +71,7 @@ class _CommentScreenState extends State<CommentScreen> {
                               btn = false;
                               _curStep =1;
                             });
+                            print(_curStep);
                           },
                           child: Container(
                             alignment: Alignment.center,
