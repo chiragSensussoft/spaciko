@@ -249,7 +249,7 @@ class _CompassScreenState extends State<CompassScreen> {
                               return  GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      checkList[index].isChecked = !checkList[index].isChecked;
+                                      checkList[index].isChecked =! checkList[index].isChecked;
                                     });
                                   },
                                   child: Container(margin: const EdgeInsets.only(left: 10),
@@ -329,28 +329,22 @@ class _CompassScreenState extends State<CompassScreen> {
                         scrollDirection: Axis.horizontal,
                         physics: AlwaysScrollableScrollPhysics(),
 
-                        onPageChanged: (int index) =>
-                            setState(() =>
-                            _index = index),
+                        onPageChanged: (int index) => setState(() => _index = index),
 
                         controller: _pageController,
                         itemCount: list.length,
 
                         itemBuilder: (context, i) {
-
                           return Transform.scale(
                             scale: i == _index ? 1.03 : 0.9,
-
                             /*white box desing*/
                             child: GestureDetector(
                               onTap: () {
                               },
-
                               child: Card(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-
                                 elevation: 3,
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,

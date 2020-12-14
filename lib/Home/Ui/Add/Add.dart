@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Publish.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step1.dart';
-import 'package:spaciko/Home/Ui/Add/steps/Step11.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step2.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step3.dart';
 import 'package:spaciko/Home/Ui/Add/steps/Step4.dart';

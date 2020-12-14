@@ -19,7 +19,7 @@ class Bubble extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(margin: const EdgeInsets.only(bottom: 3),
-              height: 25,
+              height: 35,
               child: CircleAvatar(
                 backgroundColor: Colors.black54,
                 child: Text('H'),
@@ -61,7 +61,7 @@ class Bubble extends StatelessWidget {
               ),
             ),
             Container(margin: const EdgeInsets.only(bottom: 3),
-              height: 25,
+              height: 35,
               child: CircleAvatar(
                 backgroundColor: Colors.black54,
                 child: Text('C'),
