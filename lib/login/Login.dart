@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spaciko/RegisterActivity/Register.dart';
 import 'package:spaciko/intro/FirstIntro.dart';
@@ -24,9 +26,10 @@ class _MyLoginState extends State<MyLogin> {
   final _formKey = GlobalKey<FormState>();
 @override
   void initState() {
-    checkUser(email, psw);
+    //checkUser(email, psw);
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,8 +164,21 @@ class _MyLoginState extends State<MyLogin> {
                         ),
 
                         Flexible(
-                          child: Image(height: 48,
-                            image: AssetImage('image/search.png'),
+                          child: GestureDetector(
+                            child: Image(height: 48,
+                              image: AssetImage('image/search.png'),
+                            ),
+                            onTap: (){
+                              signInWithGoogle().whenComplete(() {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return FirstIntro();
+                                    },
+                                  ),
+                                );
+                              });
+                            },
                           ),
                         )
                       ],
@@ -196,6 +212,80 @@ class _MyLoginState extends State<MyLogin> {
       ),
     );
   }
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  Future<String> signInWithGoogle() async {
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+    await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final AuthResult authResult = await _auth.signInWithCredential(credential);
+    final FirebaseUser user = authResult.user;
+
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+    print(user.displayName);
+    _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences.setString('name', user.displayName);
+    _sharedPreferences.setString('email1', user.email);
+    _sharedPreferences.setString('photoUrl',user.photoUrl);
+    print(_sharedPreferences.getString('name'));
+    return 'signInWithGoogle succeeded: $user';
+  }
+
+  void signOutGoogle() async{
+    await googleSignIn.signOut();
+
+    print("User Sign Out");
+  }
+
+  // Future<String> signInWithGoogle1() async {
+  //   // await Firebase.initializeApp();
+  //
+  //   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+  //   final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+  //
+  //   final AuthCredential credential = GoogleAuthProvider.getCredential(
+  //     accessToken: googleSignInAuthentication.accessToken,
+  //     idToken: googleSignInAuthentication.idToken,
+  //   );
+  //
+  //   final AuthResult authResult = await _auth.signInWithCredential(credential);
+  //   final FirebaseUser user = authResult.user;
+  //
+  //   if (user != null) {
+  //     // Checking if email and name is null
+  //     assert(user.uid != null);
+  //     assert(user.email != null);
+  //     assert(user.displayName != null);
+  //     assert(user.photoURL != null);
+  //
+  //
+  //     assert(!user.isAnonymous);
+  //     assert(await user.getIdToken() != null);
+  //
+  //     final User currentUser = _auth.currentUser;
+  //     assert(user.uid == currentUser.uid);
+  //
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     prefs.setBool('auth', true);
+  //
+  //     return 'Google sign in successful, User UID: ${user.uid}';
+  //   }
+  //
+  //   return null;
+  // }
+
 
   checkUser(String email,String psw) async {
     _sharedPreferences = await SharedPreferences.getInstance();

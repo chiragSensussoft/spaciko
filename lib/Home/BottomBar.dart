@@ -39,6 +39,7 @@ class _CustomBottomBarState extends State<CustomBottomBar> {
       ),
     );
   }
+
   Widget NavBarItem(AssetImage deActive,AssetImage activeAssetImage,int index,bool isActive,double height){
     return GestureDetector(
       onTap: (){

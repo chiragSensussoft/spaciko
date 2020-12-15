@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>488331087122-dbsk73dva48f2jangs0un1jgnilu6fji.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.488331087122-dbsk73dva48f2jangs0un1jgnilu6fji</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>488331087122-7h0n5fhu0mgcojt2spk0uf2le9ahf0pg.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAkSxc5oq0nYC9hVIrmt5DGw529aptLMvw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>488331087122</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ck.spaciko</string>
+	<key>PROJECT_ID</key>
+	<string>spaciko-3deb3</string>
+	<key>STORAGE_BUCKET</key>
+	<string>spaciko-3deb3.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:488331087122:ios:f19d2845de6bd8f3c277cb</string>
+</dict>
+</plist>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "488331087122",
+    "project_id": "spaciko-3deb3",
+    "storage_bucket": "spaciko-3deb3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488331087122:android:2d6551dd8aee3554c277cb",
+        "android_client_info": {
+          "package_name": "com.ck.spaciko"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488331087122-7h0n5fhu0mgcojt2spk0uf2le9ahf0pg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ck.spaciko",
+            "certificate_hash": "2a76ea02a8a5dd9ca84c7e0ef8b64fcdf54498da"
+          }
+        },
+        {
+          "client_id": "488331087122-70q2867om4123puh5stso474hmhfbk8f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRZ8J0l1do9dfZpCWMRR0h7Z5xgWXlXfo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488331087122-70q2867om4123puh5stso474hmhfbk8f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

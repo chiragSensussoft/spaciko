@@ -28,9 +28,9 @@ class _SpacialOfferState extends State<SpacialOffer> {
     return  Container(
       child: ListView.builder(
           scrollDirection: Axis.vertical,
-          itemCount: 1,
+          itemCount: 3,
           itemBuilder: (_,index){
-            return Container(
+            return Container(margin: const EdgeInsets.only(bottom: 40),
               child: Column(
                 children: [
                     Container(
@@ -85,7 +85,7 @@ class _SpacialOfferState extends State<SpacialOffer> {
                         ),
                       ),
                     ),
-                  Container(margin: const EdgeInsets.only(top: 20),
+                  Container(margin: const EdgeInsets.only(top: 10),
                     child: Card(
                       elevation: 3,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),

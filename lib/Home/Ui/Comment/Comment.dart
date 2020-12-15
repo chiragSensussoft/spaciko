@@ -18,7 +18,7 @@ class _CommentScreenState extends State<CommentScreen> {
   String msg;
   TextEditingController _controller = TextEditingController();
 
-  int _curStep =1;
+  int _curStep =0;
   bool title = false;
   bool btn = true;
 
@@ -50,7 +50,6 @@ class _CommentScreenState extends State<CommentScreen> {
                           setState(() {
                            _curStep =0;
                           });
-                          print(_curStep);
                         },
                       ),
                       Visibility(
