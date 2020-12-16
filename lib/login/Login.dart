@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spaciko/RegisterActivity/Register.dart';
@@ -9,6 +12,7 @@ import 'package:spaciko/intro/FirstIntro.dart';
 import 'package:spaciko/utils/Validation.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
+import 'package:http/http.dart' as http;
 
 class MyLogin extends StatefulWidget {
 
@@ -26,8 +30,32 @@ class _MyLoginState extends State<MyLogin> {
   final _formKey = GlobalKey<FormState>();
 @override
   void initState() {
-    //checkUser(email, psw);
     super.initState();
+  }
+
+
+  void initiateFacebookLogin() async {
+    var facebookLogin = FacebookLogin();
+    var facebookLoginResult =
+    await facebookLogin.logInWithReadPermissions(['email']);
+    var graphResponse = await http.get(
+        'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${facebookLoginResult
+            .accessToken.token}');
+
+    var profile = json.decode(graphResponse.body);
+    print(profile.toString());
+
+    switch (facebookLoginResult.status) {
+      case FacebookLoginStatus.error:
+        print("Error");
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        print("CancelledByUser");
+        break;
+      case FacebookLoginStatus.loggedIn:
+        print("LoggedIn");
+        break;
+    }
   }
 
   @override
@@ -113,6 +141,7 @@ class _MyLoginState extends State<MyLogin> {
                     ),
                   ),
                   Container(margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    height: 40,
                     child: Material(
                       elevation: 5,
                       borderRadius: BorderRadius.circular(30),
@@ -155,11 +184,14 @@ class _MyLoginState extends State<MyLogin> {
                       children: [
                         Flexible(
                           child:
-                          Container(
-                            margin: const EdgeInsets.only(right: 10),
-                            child: Image(height: 50,
-                              image: AssetImage('image/facebook.png'),
+                          GestureDetector(
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              child: Image(height: 50,
+                                image: AssetImage('image/facebook.png'),
+                              ),
                             ),
+                            onTap: initiateFacebookLogin,
                           ),
                         ),
 
@@ -169,15 +201,7 @@ class _MyLoginState extends State<MyLogin> {
                               image: AssetImage('image/search.png'),
                             ),
                             onTap: (){
-                              signInWithGoogle().whenComplete(() {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return FirstIntro();
-                                    },
-                                  ),
-                                );
-                              });
+                              signInWithGoogle();
                             },
                           ),
                         )
@@ -234,12 +258,26 @@ class _MyLoginState extends State<MyLogin> {
 
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
-    print(user.displayName);
+
+
+
+    print("Name :----->${user.displayName}");
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setString('name', user.displayName);
     _sharedPreferences.setString('email1', user.email);
     _sharedPreferences.setString('photoUrl',user.photoUrl);
     print(_sharedPreferences.getString('name'));
+
+    if(user!=null){
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return FirstIntro();
+          },
+        ),
+      );
+    }
+
     return 'signInWithGoogle succeeded: $user';
   }
 
@@ -285,6 +323,7 @@ class _MyLoginState extends State<MyLogin> {
   //
   //   return null;
   // }
+
 
 
   checkUser(String email,String psw) async {
