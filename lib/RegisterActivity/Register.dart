@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spaciko/RegisterActivity/DBProvider.dart';
 import 'package:spaciko/TandC/TermsAndConditon.dart';
 import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/utils/Validation.dart';
@@ -28,6 +29,22 @@ class _RegisterState extends State<Register> {
   bool checkboxValue = false;
   final _formKey = GlobalKey<FormState>();
 
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
+  final _fNameController = TextEditingController();
+  final _lNameTextController = TextEditingController();
+
+
+  _setIsLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLogin', true);
+  }
+  final dbHelper = DatabaseHelper.instance;
+  @override
+  void initState() {
+    _query();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +79,7 @@ class _RegisterState extends State<Register> {
                     Flexible(
                       child: Container( margin: const EdgeInsets.only(top: 20,left: 20,right: 5),
                         child: TextFormField(
+                          controller: _fNameController,
                           decoration: InputDecoration(
                               labelText: 'First Name',
                               contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -81,6 +99,7 @@ class _RegisterState extends State<Register> {
                     Flexible(
                       child: Container( margin: const EdgeInsets.only(top: 20,right: 20,left: 5),
                         child: TextFormField(
+                          controller: _lNameTextController,
                           decoration: InputDecoration(
                             labelText: 'Last Name',
                               contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -101,6 +120,7 @@ class _RegisterState extends State<Register> {
                 ),
                 Container(margin: const EdgeInsets.only(top: 10,left: 20,right: 20),
                   child: TextFormField(
+                    controller: _emailTextController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25)
@@ -121,6 +141,7 @@ class _RegisterState extends State<Register> {
                 ),
                 Container(margin: const EdgeInsets.only(top: 10,left: 20,right: 20),
                   child: TextFormField(
+                    controller: _passwordTextController,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25)
@@ -201,8 +222,14 @@ class _RegisterState extends State<Register> {
                               var toast = Toast();
                               toast.overLay = false;
                               addStringToSF();
+                              print('F Name :-${_fNameController.text}');
+                              print('L Name :-${_lNameTextController.text}');
+                              print('email :-${_emailTextController.text}');
+                              print('password :-${_passwordTextController.text}');
+                              _insert();
+                              _setIsLogin();
                               // toast.showOverLay(prefs.getString('email'), Colors.black, Colors.black38, context);
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyLogin()));
+                             // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyLogin()));
                           }
                       },
                       minWidth: MediaQuery.of(context).size.width,
@@ -263,6 +290,29 @@ class _RegisterState extends State<Register> {
      prefs = await SharedPreferences.getInstance();
       prefs.setString('email', email);
      prefs.setString('[password]', psw);
+  }
+
+  void _insert() async {
+    // row to insert
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnfName : _fNameController.text,
+      DatabaseHelper.columnlName : _lNameTextController.text,
+      DatabaseHelper.columnEmail : _emailTextController.text,
+      DatabaseHelper.columnPassword : _passwordTextController.text,
+      DatabaseHelper.columnIsLoginWith : 'True',
+    };
+    final id = await dbHelper.insert(row);
+    print('inserted row id: $id');
+  }
+
+  void _query() async {
+    final allRows = await dbHelper.queryAllRows();
+    print('query all rows:');
+    allRows.forEach((row) {
+      print(row);
+      print('User Name is ${row[DatabaseHelper.columnfName]}');
+      return null;
+    });
   }
 
 }

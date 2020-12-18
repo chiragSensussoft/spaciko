@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spaciko/RegisterActivity/DBProvider.dart';
 import 'package:spaciko/RegisterActivity/Register.dart';
 import 'package:spaciko/intro/FirstIntro.dart';
 import 'package:spaciko/utils/Validation.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
-import 'package:http/http.dart' as http;
 
 class MyLogin extends StatefulWidget {
 
@@ -38,12 +38,19 @@ class _MyLoginState extends State<MyLogin> {
   Map<String, dynamic> _userData;
   AccessToken _accessToken;
   bool _checking = true;
-
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
   @override
   void initState() {
     super.initState();
     _checkIfIsLogged();
+    //isLogin();
   }
+
+
+  //SqLite get data
+  final dbHelper = DatabaseHelper.instance;
+
 
   Future<void> _checkIfIsLogged() async {
     final AccessToken accessToken = await FacebookAuth.instance.isLogged;
@@ -70,7 +77,6 @@ class _MyLoginState extends State<MyLogin> {
 
   Future<void> _login() async {
     try {
-      // show a circular progress indicator
       setState(() {
         _checking = true;
       });
@@ -158,6 +164,7 @@ class _MyLoginState extends State<MyLogin> {
                   Container(padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                     margin: const EdgeInsets.only(top: 20),
                     child: TextFormField(
+                      controller: _emailTextController,
                       decoration: InputDecoration(
                           labelText: 'Email',
                           contentPadding: const EdgeInsets.fromLTRB(
@@ -181,6 +188,7 @@ class _MyLoginState extends State<MyLogin> {
                     margin: const EdgeInsets.only(top: 10),
                     child: TextFormField(
                       obscureText: true,
+                      controller: _passwordTextController,
                       validator: (text) {
                         psw = text.toString();
                         if (Validation.isPswValid(text)) {
@@ -216,12 +224,12 @@ class _MyLoginState extends State<MyLogin> {
                           var toast = Toast();
                           toast.overLay = false;
                           if (_formKey.currentState.validate()) {
-                            checkUser(email, psw);
-                            // Navigator.push(context, MaterialPageRoute(
-                            //     builder: (context) => FirstIntro()
-                            // ));
-                            toast.showOverLay(_sharedPreferences.getString('email'),
-                                Colors.white, Colors.black38, context);
+                            //checkUser(email, psw);
+                            //isLogin();
+                            _query(_emailTextController.text,_passwordTextController.text);
+                            print(_emailTextController.text+"     "+_passwordTextController.text);
+                            // toast.showOverLay(_sharedPreferences.getString('email'),
+                            //     Colors.white, Colors.black38, context);
                           }
                         },
                         minWidth: MediaQuery
@@ -402,6 +410,37 @@ class _MyLoginState extends State<MyLogin> {
           context, MaterialPageRoute(builder: (context) => Register()));
     }
   }
+
+  void _query(String email,String pass) async {
+    final allRows = await dbHelper.queryAllRows();
+
+    allRows.forEach((row) {
+      print(row);
+      print('User Name is ${row[DatabaseHelper.columnfName]}');
+      if(email == row[DatabaseHelper.columnEmail]|| pass == row[DatabaseHelper.columnPassword]){
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => FirstIntro()));
+      }
+      else{
+        Toast t = Toast();
+        t.overLay = false;
+        t.showOverLay('Something went wrong', Colors.white, Colors.black54, context);
+      }
+    });
+  }
+
+  void isLogin() async {
+    final allRows = await dbHelper.queryAllRows();
+    allRows.forEach((row) {
+      print(row[DatabaseHelper.columnEmail]);
+      // if(row[DatabaseHelper.columnIsLoginWith] == 'True'){
+      //   Navigator.push(
+      //       context, MaterialPageRoute(builder: (context) => FirstIntro()));
+      // }
+      return null;
+    });
+  }
+
 }
 
 
