@@ -4,9 +4,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
    <application
         android:label="spaciko"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
        <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyCuAkVVciCZDS4dPHPw-slMiEEBrGCvaSM"/>
+           android:value="AIzaSyCnGL7hF2rodHZ_lE87OozQCZdCHk3wEOM"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

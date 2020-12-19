@@ -86,7 +86,7 @@ class _FirstIntroState extends State<FirstIntro> {
                         Container(
                           child:  GestureDetector(
                             onTap: (){
-                              Navigator.push(context, MaterialPageRoute(
+                              Navigator.pushReplacement(context, MaterialPageRoute(
                                   builder: (context) => SecondIntro()
                               ));
                             },

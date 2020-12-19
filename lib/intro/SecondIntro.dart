@@ -60,7 +60,7 @@ class _IntroState extends State<Intro> {
                   borderRadius: BorderRadius.circular(25),
                   child: FlatButton(
                     onPressed: (){
-                      Navigator.push(context, MaterialPageRoute(
+                      Navigator.pushReplacement(context, MaterialPageRoute(
                           builder: (context) => Home()
                       ));
                     },

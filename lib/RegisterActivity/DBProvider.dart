@@ -18,20 +18,16 @@ class DatabaseHelper {
   static final columnPassword = 'password';
   static final columnIsLoginWith= 'isLoginWith';
 
-  // make this a singleton class
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
-  // only have a single app-wide reference to the database
   static Database _database;
   Future<Database> get database async {
     if (_database != null) return _database;
-    // lazily instantiate the db the first time it is accessed
     _database = await _initDatabase();
     return _database;
   }
 
-  // this opens the database (and creates it if it doesn't exist)
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
@@ -56,22 +52,21 @@ class DatabaseHelper {
     return await db.query(table);
   }
 
-  Future<int> queryRowCount() async {
-    Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
-  }
-
-  Future<int> update(Map<String, dynamic> row) async {
-    Database db = await instance.database;
-    int id = row[columnId];
-    return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
-  }
-
-  Future<int> delete(int id) async {
-    Database db = await instance.database;
-    return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
-  }
-
+  // Future<int> queryRowCount() async {
+  //   Database db = await instance.database;
+  //   return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
+  // }
+  //
+  // Future<int> update(Map<String, dynamic> row) async {
+  //   Database db = await instance.database;
+  //   int id = row[columnId];
+  //   return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
+  // }
+  //
+  // Future<int> delete(int id) async {
+  //   Database db = await instance.database;
+  //   return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+  // }
 
 
 }

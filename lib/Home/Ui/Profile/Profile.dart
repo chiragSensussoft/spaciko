@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
 class Profile extends StatefulWidget {
@@ -23,6 +24,13 @@ class _ProfileState extends State<Profile> {
         url = value.getString('photoUrl');
       })
     });
+  }
+
+  SharedPreferences _sharedPreferences;
+  void _logout() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences.remove('isLogin');
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyLogin()));
   }
 
   @override
@@ -90,7 +98,7 @@ class _ProfileState extends State<Profile> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                           color: AppColors.colorPrimaryDark,
                           minWidth: MediaQuery.of(context).size.width /2,
-                          onPressed: (){},
+                          onPressed: () => _logout(),
                           child:Text('My Profile',style: TextStyle(fontFamily: 'poppins_semibold',color: Colors.white,fontSize: 16),),
                         ),
                       ),

@@ -1,9 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spaciko/RegisterActivity/DBProvider.dart';
 import 'package:spaciko/TandC/TermsAndConditon.dart';
+import 'package:spaciko/intro/FirstIntro.dart';
 import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/utils/Validation.dart';
 import 'package:spaciko/widgets/Pelette.dart';
@@ -29,16 +33,17 @@ class _RegisterState extends State<Register> {
   bool checkboxValue = false;
   final _formKey = GlobalKey<FormState>();
 
+  SharedPreferences _sharedPreferences;
+
+  Map<String, dynamic> _userData;
+  AccessToken _accessToken;
+  bool _checking = true;
+
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
   final _fNameController = TextEditingController();
   final _lNameTextController = TextEditingController();
 
-
-  _setIsLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLogin', true);
-  }
   final dbHelper = DatabaseHelper.instance;
   @override
   void initState() {
@@ -222,14 +227,9 @@ class _RegisterState extends State<Register> {
                               var toast = Toast();
                               toast.overLay = false;
                               addStringToSF();
-                              print('F Name :-${_fNameController.text}');
-                              print('L Name :-${_lNameTextController.text}');
-                              print('email :-${_emailTextController.text}');
-                              print('password :-${_passwordTextController.text}');
                               _insert();
-                              _setIsLogin();
                               // toast.showOverLay(prefs.getString('email'), Colors.black, Colors.black38, context);
-                             // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyLogin()));
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyLogin()));
                           }
                       },
                       minWidth: MediaQuery.of(context).size.width,
@@ -245,16 +245,22 @@ class _RegisterState extends State<Register> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(margin: const EdgeInsets.only(right: 5),
-                        child: Image(
-                          image: AssetImage('image/facebook.png'),
-                          height: 40,
+                      GestureDetector(
+                        onTap: _login,
+                        child: Container(margin: const EdgeInsets.only(right: 5),
+                          child: Image(
+                            image: AssetImage('image/facebook.png'),
+                            height: 40,
+                          ),
                         ),
                       ),
-                      Container(margin: const EdgeInsets.only(left: 5),
-                        child: Image(
-                          image: AssetImage('image/search.png'),
-                          height: 40,
+                      GestureDetector(
+                        onTap: signInWithGoogle,
+                        child: Container(margin: const EdgeInsets.only(left: 5),
+                          child: Image(
+                            image: AssetImage('image/search.png'),
+                            height: 40,
+                          ),
                         ),
                       )
                     ],
@@ -293,7 +299,6 @@ class _RegisterState extends State<Register> {
   }
 
   void _insert() async {
-    // row to insert
     Map<String, dynamic> row = {
       DatabaseHelper.columnfName : _fNameController.text,
       DatabaseHelper.columnlName : _lNameTextController.text,
@@ -313,6 +318,133 @@ class _RegisterState extends State<Register> {
       print('User Name is ${row[DatabaseHelper.columnfName]}');
       return null;
     });
+  }
+
+
+
+  //Google Sign In
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  Future<String> signInWithGoogle() async {
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+    await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final AuthResult authResult = await _auth.signInWithCredential(credential);
+    final FirebaseUser user = authResult.user;
+
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+
+
+
+    print("Name :----->${user.displayName}");
+    _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences.setString('name', user.displayName);
+    _sharedPreferences.setString('email1', user.email);
+    _sharedPreferences.setString('photoUrl',user.photoUrl);
+    print(_sharedPreferences.getString('name'));
+
+    if(user!=null){
+      isLogin(true);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return FirstIntro();
+          },
+        ),
+      );
+    }
+
+    return 'signInWithGoogle succeeded: $user';
+  }
+
+  void signOutGoogle() async{
+    await googleSignIn.signOut();
+
+    print("User Sign Out");
+  }
+
+  void isLogin(bool isLogin) async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences.setBool('isLogin', isLogin);
+  }
+
+  /// Facebook signIn
+
+  Future<void> _checkIfIsLogged() async {
+    final AccessToken accessToken = await FacebookAuth.instance.isLogged;
+    setState(() {
+      _checking = false;
+    });
+    if (accessToken != null) {
+      print("is Logged:::: ${prettyPrint(accessToken.toJson())}");
+      final userData = await FacebookAuth.instance.getUserData();
+      _accessToken = accessToken;
+      setState(() {
+        _userData = userData;
+      });
+    }
+  }
+
+  void _printCredentials() {
+    print(
+      prettyPrint(_accessToken.toJson()),
+    );
+  }
+
+  Future<void> _login() async {
+    try {
+      setState(() {
+        _checking = true;
+      });
+      _accessToken = await FacebookAuth.instance.login();
+      _printCredentials();
+      final userData = await FacebookAuth.instance.getUserData();
+      _userData = userData;
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => FirstIntro()));
+      isLogin(true);
+      print('Login Successful');
+    } on FacebookAuthException catch (e) {
+      print('${e.message}');
+      switch (e.errorCode) {
+        case FacebookAuthErrorCode.OPERATION_IN_PROGRESS:
+          print("You have a previous login operation in progress");
+          break;
+        case FacebookAuthErrorCode.CANCELLED:
+          print("login cancelled");
+          break;
+        case FacebookAuthErrorCode.FAILED:
+          print("login failed");
+          break;
+      }
+    } catch (e, s) {
+      print(e);
+      print(s);
+    } finally {
+      setState(() {
+        _checking = false;
+      });
+    }
+  }
+
+
+  Future<void> _logOut() async {
+    await FacebookAuth.instance.logOut();
+    _accessToken = null;
+    _userData = null;
+    setState(() {});
   }
 
 }

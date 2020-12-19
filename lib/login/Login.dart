@@ -13,10 +13,9 @@ import 'package:spaciko/RegisterActivity/Register.dart';
 import 'package:spaciko/intro/FirstIntro.dart';
 import 'package:spaciko/utils/Validation.dart';
 import 'package:spaciko/widgets/Pelette.dart';
-import 'package:spaciko/widgets/Toast.dart';
+String eml;
 
 class MyLogin extends StatefulWidget {
-
   @override
   _MyLoginState createState() => _MyLoginState();
 }
@@ -25,6 +24,7 @@ SharedPreferences _sharedPreferences;
 
 String email;
 String psw;
+bool idLogin;
 
 String prettyPrint(Map json) {
   JsonEncoder encoder = new JsonEncoder.withIndent('  ');
@@ -33,24 +33,29 @@ String prettyPrint(Map json) {
 }
 
 class _MyLoginState extends State<MyLogin> {
-
   final _formKey = GlobalKey<FormState>();
   Map<String, dynamic> _userData;
   AccessToken _accessToken;
   bool _checking = true;
-  final _emailTextController = TextEditingController();
+  final _emailTextController = TextEditingController(text: eml);
   final _passwordTextController = TextEditingController();
   @override
   void initState() {
     super.initState();
     _checkIfIsLogged();
-    //isLogin();
+    _checkIsLogin();
   }
 
+  void _checkIsLogin()async{
+    _sharedPreferences = await SharedPreferences.getInstance();
+      if (_sharedPreferences.getBool('isLogin')== true) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => FirstIntro()));
+      }
+  }
 
   //SqLite get data
   final dbHelper = DatabaseHelper.instance;
-
 
   Future<void> _checkIfIsLogged() async {
     final AccessToken accessToken = await FacebookAuth.instance.isLogged;
@@ -59,9 +64,7 @@ class _MyLoginState extends State<MyLogin> {
     });
     if (accessToken != null) {
       print("is Logged:::: ${prettyPrint(accessToken.toJson())}");
-      // now you can call to  FacebookAuth.instance.getUserData();
       final userData = await FacebookAuth.instance.getUserData();
-      // final userData = await FacebookAuth.instance.getUserData(fields: "email,birthday,friends,gender,link");
       _accessToken = accessToken;
       setState(() {
         _userData = userData;
@@ -80,23 +83,21 @@ class _MyLoginState extends State<MyLogin> {
       setState(() {
         _checking = true;
       });
-      _accessToken = await FacebookAuth.instance.login(); // by the fault we request the email and the public profile
-      // loginBehavior is only supported for Android devices, for ios it will be ignored
-      // _accessToken = await FacebookAuth.instance.login(
-      //   permissions: ['email', 'public_profile', 'user_birthday', 'user_friends', 'user_gender', 'user_link'],
-      //   loginBehavior:
-      //       LoginBehavior.DIALOG_ONLY, // (only android) show an authentication dialog instead of redirecting to facebook app
-      // );
+      _accessToken = await FacebookAuth.instance.login();
       _printCredentials();
-      // get the user data
-      // by default we get the userId, email,name and picture
       final userData = await FacebookAuth.instance.getUserData();
-      // final userData = await FacebookAuth.instance.getUserData(fields: "email,birthday,friends,gender,link");
       _userData = userData;
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => FirstIntro()));
+      isLogin(true);
+      print('Login Successful');
+      userData.forEach((key, value) {
+        if(key == 'name'){
+          print('Value -->$value');
+        }
+      });
     } on FacebookAuthException catch (e) {
-      // if the facebook login fails
-      print(e.message); // print the error message in console
-      // check the error type
+      print('${e.message}');
       switch (e.errorCode) {
         case FacebookAuthErrorCode.OPERATION_IN_PROGRESS:
           print("You have a previous login operation in progress");
@@ -109,11 +110,9 @@ class _MyLoginState extends State<MyLogin> {
           break;
       }
     } catch (e, s) {
-      // print in the logs the unknown errors
       print(e);
       print(s);
     } finally {
-      // update the view
       setState(() {
         _checking = false;
       });
@@ -221,15 +220,8 @@ class _MyLoginState extends State<MyLogin> {
                       color: Color(0xff18a499),
                       child: FlatButton(
                         onPressed: () {
-                          var toast = Toast();
-                          toast.overLay = false;
                           if (_formKey.currentState.validate()) {
-                            //checkUser(email, psw);
-                            //isLogin();
                             _query(_emailTextController.text,_passwordTextController.text);
-                            print(_emailTextController.text+"     "+_passwordTextController.text);
-                            // toast.showOverLay(_sharedPreferences.getString('email'),
-                            //     Colors.white, Colors.black38, context);
                           }
                         },
                         minWidth: MediaQuery
@@ -342,6 +334,7 @@ class _MyLoginState extends State<MyLogin> {
     print(_sharedPreferences.getString('name'));
 
     if(user!=null){
+      isLogin(true);
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
@@ -396,53 +389,36 @@ class _MyLoginState extends State<MyLogin> {
   //
   //   return null;
   // }
+  // checkUser(String email,String psw) async {
+  //   _sharedPreferences = await SharedPreferences.getInstance();
+  //   if (email==_sharedPreferences.getString('email')||psw==_sharedPreferences.getString('password')) {
+  //     Navigator.push(
+  //         context, MaterialPageRoute(builder: (context) => FirstIntro()));
+  //   }
+  //   else{
+  //     Navigator.push(
+  //         context, MaterialPageRoute(builder: (context) => Register()));
+  //   }
+  // }
 
-
-
-  checkUser(String email,String psw) async {
-    _sharedPreferences = await SharedPreferences.getInstance();
-    if (email==_sharedPreferences.getString('email')||psw==_sharedPreferences.getString('password')) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => FirstIntro()));
-    }
-    else{
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Register()));
-    }
-  }
 
   void _query(String email,String pass) async {
     final allRows = await dbHelper.queryAllRows();
 
     allRows.forEach((row) {
-      print(row);
-      print('User Name is ${row[DatabaseHelper.columnfName]}');
-      if(email == row[DatabaseHelper.columnEmail]|| pass == row[DatabaseHelper.columnPassword]){
-        Navigator.push(
+      print('User Name is ${row[DatabaseHelper.columnEmail]}');
+      if(email == row[DatabaseHelper.columnEmail] && pass == row[DatabaseHelper.columnPassword]){
+        print('Matched');
+        isLogin(true);
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => FirstIntro()));
       }
-      else{
-        Toast t = Toast();
-        t.overLay = false;
-        t.showOverLay('Something went wrong', Colors.white, Colors.black54, context);
-      }
+
     });
   }
 
-  void isLogin() async {
-    final allRows = await dbHelper.queryAllRows();
-    allRows.forEach((row) {
-      print(row[DatabaseHelper.columnEmail]);
-      // if(row[DatabaseHelper.columnIsLoginWith] == 'True'){
-      //   Navigator.push(
-      //       context, MaterialPageRoute(builder: (context) => FirstIntro()));
-      // }
-      return null;
-    });
+  void isLogin(bool isLogin) async {
+   _sharedPreferences = await SharedPreferences.getInstance();
+    _sharedPreferences.setBool('isLogin', isLogin);
   }
-
 }
-
-
-
-
