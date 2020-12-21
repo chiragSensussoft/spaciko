@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +12,8 @@ import 'package:spaciko/RegisterActivity/Register.dart';
 import 'package:spaciko/intro/FirstIntro.dart';
 import 'package:spaciko/utils/Validation.dart';
 import 'package:spaciko/widgets/Pelette.dart';
+import 'package:spaciko/widgets/Toast.dart';
+
 String eml;
 
 class MyLogin extends StatefulWidget {
@@ -33,6 +34,10 @@ String prettyPrint(Map json) {
 }
 
 class _MyLoginState extends State<MyLogin> {
+
+  //final dbHelper = DatabaseHelper.instance;
+
+
   final _formKey = GlobalKey<FormState>();
   Map<String, dynamic> _userData;
   AccessToken _accessToken;
@@ -87,12 +92,13 @@ class _MyLoginState extends State<MyLogin> {
       _printCredentials();
       final userData = await FacebookAuth.instance.getUserData();
       _userData = userData;
+      print(userData);
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => FirstIntro()));
       isLogin(true);
       print('Login Successful');
       userData.forEach((key, value) {
-        if(key == 'name'){
+        if(key == 'gender'){
           print('Value -->$value');
         }
       });
@@ -221,7 +227,7 @@ class _MyLoginState extends State<MyLogin> {
                       child: FlatButton(
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
-                            _query(_emailTextController.text,_passwordTextController.text);
+                            _loginWithDatabase();
                           }
                         },
                         minWidth: MediaQuery
@@ -302,13 +308,63 @@ class _MyLoginState extends State<MyLogin> {
     );
   }
 
+  void update(String fName,String lName,String email,String pass,String loginType) async{
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnfName : fName,
+      DatabaseHelper.columnlName : lName,
+      DatabaseHelper.columnEmail : email,
+      DatabaseHelper.columnPassword : pass,
+      DatabaseHelper.columnIsLoginWith : loginType,
+    };
+    final data = await dbHelper.select(email);
+
+    data.forEach((element) {
+      if(element['email'] == email){
+        dbHelper.update(row,element['_id']);
+        print(element);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => FirstIntro()));
+      }else{
+        Toast toast = Toast();
+        toast.overLay = false;
+        toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
+      }
+    });
+
+  }
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn googleSignIn = GoogleSignIn();
+  final GoogleSignIn googleSignIn = GoogleSignIn(
+      scopes: ["email", "https://www.googleapis.com/auth/user.birthday.read", "https://www.googleapis.com/auth/userinfo.profile"]
+  );
+
+  static Map<String, dynamic> parseJwt(String token) {
+    if (token == null) return null;
+    final List<String> parts = token.split('.');
+    if (parts.length != 3) {
+      return null;
+    }
+    final String payload = parts[1];
+    final String normalized = base64Url.normalize(payload);
+    final String resp = utf8.decode(base64Url.decode(normalized));
+    final payloadMap = json.decode(resp);
+    if (payloadMap is! Map<String, dynamic>) {
+      return null;
+    }
+    return payloadMap;
+  }
 
   Future<String> signInWithGoogle() async {
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication =
     await googleSignInAccount.authentication;
+
+    final idToken = googleSignInAuthentication.idToken;
+
+    Map<String, dynamic> idMap = parseJwt(idToken);
+
+    final String firstName = idMap["given_name"];
+    final String lastName = idMap["family_name"];
 
     final AuthCredential credential = GoogleAuthProvider.getCredential(
       accessToken: googleSignInAuthentication.accessToken,
@@ -324,26 +380,16 @@ class _MyLoginState extends State<MyLogin> {
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
 
-
-
-    print("Name :----->${user.displayName}");
+    print("FirstName :--->${firstName+"\nLastName ---> "+ lastName}");
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setString('name', user.displayName);
     _sharedPreferences.setString('email1', user.email);
     _sharedPreferences.setString('photoUrl',user.photoUrl);
-    print(_sharedPreferences.getString('name'));
 
     if(user!=null){
       isLogin(true);
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) {
-            return FirstIntro();
-          },
-        ),
-      );
+      update(firstName, lastName, user.email, '', 'Google');
     }
-
     return 'signInWithGoogle succeeded: $user';
   }
 
@@ -351,6 +397,23 @@ class _MyLoginState extends State<MyLogin> {
     await googleSignIn.signOut();
 
     print("User Sign Out");
+  }
+
+  void _loginWithDatabase() async {
+    final data = await dbHelper.select(_emailTextController.text);
+    data.forEach((element) {
+      if(element['email'] == _emailTextController.text && element['password']==_passwordTextController.text){
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => FirstIntro()));
+        isLogin(true);
+      }else{
+        print('dfg');
+        Toast toast = Toast();
+        toast.overLay = false;
+        toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
+      }
+    });
+
   }
 
   // Future<String> signInWithGoogle1() async {
@@ -373,7 +436,6 @@ class _MyLoginState extends State<MyLogin> {
   //     assert(user.email != null);
   //     assert(user.displayName != null);
   //     assert(user.photoURL != null);
-  //
   //
   //     assert(!user.isAnonymous);
   //     assert(await user.getIdToken() != null);
@@ -402,20 +464,20 @@ class _MyLoginState extends State<MyLogin> {
   // }
 
 
-  void _query(String email,String pass) async {
-    final allRows = await dbHelper.queryAllRows();
-
-    allRows.forEach((row) {
-      print('User Name is ${row[DatabaseHelper.columnEmail]}');
-      if(email == row[DatabaseHelper.columnEmail] && pass == row[DatabaseHelper.columnPassword]){
-        print('Matched');
-        isLogin(true);
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => FirstIntro()));
-      }
-
-    });
-  }
+  // void _query(String email,String pass) async {
+  //   final allRows = await dbHelper.queryAllRows();
+  //
+  //   allRows.forEach((row) {
+  //     print('User Name is ${row[DatabaseHelper.columnEmail]}');
+  //     if(email == row[DatabaseHelper.columnEmail] && pass == row[DatabaseHelper.columnPassword]){
+  //       print('Matched');
+  //       isLogin(true);
+  //       Navigator.pushReplacement(
+  //           context, MaterialPageRoute(builder: (context) => FirstIntro()));
+  //     }
+  //
+  //   });
+  // }
 
   void isLogin(bool isLogin) async {
    _sharedPreferences = await SharedPreferences.getInstance();

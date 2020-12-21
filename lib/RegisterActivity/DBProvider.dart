@@ -6,10 +6,10 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
 
-  static final _databaseName = "MyDatabase.db";
+  static final _databaseName = "tbl_User1.db";
   static final _databaseVersion = 1;
 
-  static final table = 'my_table';
+  static final table = 'User_table';
 
   static final columnId = '_id';
   static final columnfName = 'fName';
@@ -38,9 +38,8 @@ class DatabaseHelper {
 
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
-    await db.execute("CREATE TABLE $table ($columnId INTEGER PRIMARY KEY, $columnfName TEXT NOT NULL,$columnlName TEXT NOT NULL, $columnEmail TEXT NOT NULL, $columnPassword TEXT NOT NULL, $columnIsLoginWith TEXT NOT NULL)");
+    await db.execute("CREATE TABLE $table ($columnId INTEGER PRIMARY KEY, $columnfName TEXT NOT NULL,$columnlName TEXT NOT NULL, $columnEmail TEXT NOT NULL UNIQUE, $columnPassword TEXT, $columnIsLoginWith TEXT NOT NULL)");
   }
-
 
   Future<int> insert(Map<String, dynamic> row) async {
     Database db = await instance.database;
@@ -56,17 +55,21 @@ class DatabaseHelper {
   //   Database db = await instance.database;
   //   return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $table'));
   // }
-  //
-  // Future<int> update(Map<String, dynamic> row) async {
-  //   Database db = await instance.database;
-  //   int id = row[columnId];
-  //   return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
-  // }
-  //
+
+  Future<int> update(Map<String, dynamic> row,int id) async {
+    Database db = await instance.database;
+    return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
+  }
+
+  Future<List<Map<String,dynamic>>> select(String email) async {
+    Database db = await instance.database;
+    List<Map> maps = await db.rawQuery("SELECT * FROM $table WHERE $columnEmail = '$email'");
+    return maps;
+  }
+
   // Future<int> delete(int id) async {
   //   Database db = await instance.database;
   //   return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
   // }
-
 
 }

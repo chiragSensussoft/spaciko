@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -12,6 +14,7 @@ import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/utils/Validation.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
+import 'package:sqflite/sqflite.dart';
 
 class MyActivity extends StatelessWidget {
   @override
@@ -223,14 +226,14 @@ class _RegisterState extends State<Register> {
                       borderRadius: BorderRadius.circular(25),
                       child: FlatButton(
                         onPressed: (){
-                          if(_formKey.currentState.validate()){
-                              var toast = Toast();
-                              toast.overLay = false;
-                              addStringToSF();
-                              _insert();
-                              // toast.showOverLay(prefs.getString('email'), Colors.black, Colors.black38, context);
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyLogin()));
-                          }
+                          _insert();
+                          // if(_formKey.currentState.validate()){
+                          //     var toast = Toast();
+                          //     toast.overLay = false;
+                          //     addStringToSF();
+                          //     // toast.showOverLay(prefs.getString('email'), Colors.black, Colors.black38, context);
+                          //     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyLogin()));
+                          // }
                       },
                       minWidth: MediaQuery.of(context).size.width,
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -304,10 +307,47 @@ class _RegisterState extends State<Register> {
       DatabaseHelper.columnlName : _lNameTextController.text,
       DatabaseHelper.columnEmail : _emailTextController.text,
       DatabaseHelper.columnPassword : _passwordTextController.text,
-      DatabaseHelper.columnIsLoginWith : 'True',
+      DatabaseHelper.columnIsLoginWith : 'Google',
     };
-    final id = await dbHelper.insert(row);
-    print('inserted row id: $id');
+
+    final data = await dbHelper.select(_emailTextController.text);
+    data.forEach((element) {
+      if(element['email'] != _emailTextController.text){
+        dbHelper.insert(row);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MyLogin()));
+      }else{
+        Toast toast = Toast();
+        toast.overLay = false;
+        toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
+      }
+    });
+
+  }
+
+  void update(String fName,String lName,String email,String pass,String loginType) async{
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnfName : fName,
+      DatabaseHelper.columnlName : lName,
+      DatabaseHelper.columnEmail : email,
+      DatabaseHelper.columnPassword : pass,
+      DatabaseHelper.columnIsLoginWith : loginType,
+    };
+    final data = await dbHelper.select(email);
+
+    data.forEach((element) {
+      if(element['email'] == email){
+        dbHelper.update(row,element['_id']);
+        print(element);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => FirstIntro()));
+      }else{
+        Toast toast = Toast();
+        toast.overLay = false;
+        toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
+      }
+    });
+
   }
 
   void _query() async {
@@ -320,12 +360,25 @@ class _RegisterState extends State<Register> {
     });
   }
 
-
-
   //Google Sign In
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  static Map<String, dynamic> parseJwt(String token) {
+    if (token == null) return null;
+    final List<String> parts = token.split('.');
+    if (parts.length != 3) {
+      return null;
+    }
+    final String payload = parts[1];
+    final String normalized = base64Url.normalize(payload);
+    final String resp = utf8.decode(base64Url.decode(normalized));
+    final payloadMap = json.decode(resp);
+    if (payloadMap is! Map<String, dynamic>) {
+      return null;
+    }
+    return payloadMap;
+  }
 
   Future<String> signInWithGoogle() async {
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
@@ -340,6 +393,13 @@ class _RegisterState extends State<Register> {
     final AuthResult authResult = await _auth.signInWithCredential(credential);
     final FirebaseUser user = authResult.user;
 
+    final idToken = googleSignInAuthentication.idToken;
+
+    Map<String, dynamic> idMap = parseJwt(idToken);
+
+    final String firstName = idMap["given_name"];
+    final String lastName = idMap["family_name"];
+
     assert(!user.isAnonymous);
     assert(await user.getIdToken() != null);
 
@@ -347,23 +407,17 @@ class _RegisterState extends State<Register> {
     assert(user.uid == currentUser.uid);
 
 
-
-    print("Name :----->${user.displayName}");
+    //Shared Preferences
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setString('name', user.displayName);
     _sharedPreferences.setString('email1', user.email);
     _sharedPreferences.setString('photoUrl',user.photoUrl);
     print(_sharedPreferences.getString('name'));
 
+    //Using Sqflite Database
+
     if(user!=null){
-      isLogin(true);
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) {
-            return FirstIntro();
-          },
-        ),
-      );
+      update(firstName, lastName, user.email, '', 'Google');
     }
 
     return 'signInWithGoogle succeeded: $user';
