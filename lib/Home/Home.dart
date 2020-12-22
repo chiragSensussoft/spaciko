@@ -76,7 +76,7 @@ class _MyHomeState extends State<MyHome> {
       child: CommentScreen(),
     ),
     Container(
-      child: Profile(),
+      child: MyScreen(),
     )
   ];
 }

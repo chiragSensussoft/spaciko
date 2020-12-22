@@ -11,8 +11,7 @@ class SpacialOffer extends StatefulWidget {
 class _SpacialOfferState extends State<SpacialOffer> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Container(padding: const EdgeInsets.only(top: 10),
+    return Container(padding: const EdgeInsets.only(top: 10),
         decoration: BoxDecoration(
           color: AppColors.colorLightBlue50,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20)),
@@ -20,7 +19,7 @@ class _SpacialOfferState extends State<SpacialOffer> {
         child: Container(
           child: _spacialOffer(),
         ),
-      ),
+
     );
   }
 

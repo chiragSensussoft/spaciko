@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
 
-  static final _databaseName = "tbl_User1.db";
+  static final _databaseName = "tbl_User2.db";
   static final _databaseVersion = 1;
 
   static final table = 'User_table';
@@ -67,9 +67,9 @@ class DatabaseHelper {
     return maps;
   }
 
-  // Future<int> delete(int id) async {
-  //   Database db = await instance.database;
-  //   return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
-  // }
+  Future<int> delete(int id) async {
+    Database db = await instance.database;
+    return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+  }
 
 }

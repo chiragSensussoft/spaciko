@@ -14,7 +14,8 @@ import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/utils/Validation.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:http/http.dart' as http;
+
 
 class MyActivity extends StatelessWidget {
   @override
@@ -24,7 +25,6 @@ class MyActivity extends StatelessWidget {
     );
   }
 }
-
 class Register extends StatefulWidget{
   @override
   _RegisterState createState() => _RegisterState();
@@ -33,11 +33,11 @@ String email,psw,fname,lname;
 bool isChecked;
 
 class _RegisterState extends State<Register> {
+
   bool checkboxValue = false;
   final _formKey = GlobalKey<FormState>();
 
   SharedPreferences _sharedPreferences;
-
   Map<String, dynamic> _userData;
   AccessToken _accessToken;
   bool _checking = true;
@@ -47,10 +47,12 @@ class _RegisterState extends State<Register> {
   final _fNameController = TextEditingController();
   final _lNameTextController = TextEditingController();
 
+  var dbData;
   final dbHelper = DatabaseHelper.instance;
   @override
   void initState() {
     _query();
+    dbData = dbHelper.select(email);
     super.initState();
   }
   @override
@@ -68,7 +70,7 @@ class _RegisterState extends State<Register> {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('image/login.png'),
-            fit: BoxFit.cover
+            fit: BoxFit.fill
           )
         ),
         child: SingleChildScrollView(
@@ -307,22 +309,18 @@ class _RegisterState extends State<Register> {
       DatabaseHelper.columnlName : _lNameTextController.text,
       DatabaseHelper.columnEmail : _emailTextController.text,
       DatabaseHelper.columnPassword : _passwordTextController.text,
-      DatabaseHelper.columnIsLoginWith : 'Google',
+      DatabaseHelper.columnIsLoginWith : 'Normal',
     };
 
     final data = await dbHelper.select(_emailTextController.text);
-    data.forEach((element) {
-      if(element['email'] != _emailTextController.text){
-        dbHelper.insert(row);
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MyLogin()));
-      }else{
-        Toast toast = Toast();
-        toast.overLay = false;
-        toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
-      }
-    });
-
+    print(data);
+    if(data.length == 0){
+      dbHelper.insert(row);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => MyLogin()));
+    }else{
+      print('User Exist');
+    }
   }
 
   void update(String fName,String lName,String email,String pass,String loginType) async{
@@ -333,21 +331,50 @@ class _RegisterState extends State<Register> {
       DatabaseHelper.columnPassword : pass,
       DatabaseHelper.columnIsLoginWith : loginType,
     };
+
     final data = await dbHelper.select(email);
 
-    data.forEach((element) {
-      if(element['email'] == email){
-        dbHelper.update(row,element['_id']);
-        print(element);
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => FirstIntro()));
-      }else{
-        Toast toast = Toast();
-        toast.overLay = false;
-        toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
-      }
-    });
+    if(data.length != 0){
+      data.forEach((element) {
+        if(element['email'] == email){
+          dbHelper.update(row,element['_id']);
+          print(element);
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => FirstIntro()));
+        }else{
+          Toast toast = Toast();
+          toast.overLay = false;
+          toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
+        }
+      });
+    }
+    else{
+      insertWithSocial(fName,lName,email,pass,loginType);
+    }
 
+    // data.forEach((element) {
+    //   if(element['email'] == email){
+    //     dbHelper.update(row,element['_id']);
+    //     print(element);
+    //     Navigator.push(
+    //         context, MaterialPageRoute(builder: (context) => FirstIntro()));
+    //   }else{
+    //     Toast toast = Toast();
+    //     toast.overLay = false;
+    //     toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
+    //   }
+    // });
+  }
+
+  void insertWithSocial(String fName,String lName,String email,String pass,String loginType){
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnfName : fName,
+      DatabaseHelper.columnlName : lName,
+      DatabaseHelper.columnEmail : email,
+      DatabaseHelper.columnPassword : pass,
+      DatabaseHelper.columnIsLoginWith : loginType,
+    };
+    dbHelper.insert(row);
   }
 
   void _query() async {
@@ -466,9 +493,11 @@ class _RegisterState extends State<Register> {
       _printCredentials();
       final userData = await FacebookAuth.instance.getUserData();
       _userData = userData;
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => FirstIntro()));
-      isLogin(true);
+      var graphResponse = await http.get(
+          'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture.width(200)&access_token=${_accessToken.token}');
+
+      var profile = json.decode(graphResponse.body);
+      update(profile['first_name'], profile['last_name'], profile['email'],'', 'FaceBook');
       print('Login Successful');
     } on FacebookAuthException catch (e) {
       print('${e.message}');

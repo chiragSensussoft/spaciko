@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +11,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spaciko/RegisterActivity/DBProvider.dart';
 import 'package:spaciko/RegisterActivity/Register.dart';
 import 'package:spaciko/intro/FirstIntro.dart';
+import 'package:spaciko/login/forgot%20password/ForgotPassword.dart';
 import 'package:spaciko/utils/Validation.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 import 'package:spaciko/widgets/Toast.dart';
-
-String eml;
+import 'package:http/http.dart' as http;
 
 class MyLogin extends StatefulWidget {
   @override
@@ -35,20 +36,74 @@ String prettyPrint(Map json) {
 
 class _MyLoginState extends State<MyLogin> {
 
-  //final dbHelper = DatabaseHelper.instance;
-
-
   final _formKey = GlobalKey<FormState>();
   Map<String, dynamic> _userData;
   AccessToken _accessToken;
   bool _checking = true;
-  final _emailTextController = TextEditingController(text: eml);
+  final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
   @override
   void initState() {
     super.initState();
     _checkIfIsLogged();
     _checkIsLogin();
+    // _fCM();
+  }
+  String _homeScreenText = "Waiting for token...";
+  String _messageText = "Waiting for message...";
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+  //Firebase messaging
+  void _fCM(){
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        setState(() {
+          _messageText = "Push Messaging message: $message";
+        });
+        print("onMessage: $message");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        setState(() {
+          _messageText = "Push Messaging message: $message";
+        });
+        print("onLaunch: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        setState(() {
+          _messageText = "Push Messaging message: $message";
+        });
+        print("onResume: $message");
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
+    _firebaseMessaging.getToken().then((String token) {
+      assert(token != null);
+      setState(() {
+        _homeScreenText = "Push Messaging token: $token";
+      });
+      print(_homeScreenText);
+    });
+  }
+
+  static Map<String, dynamic> parseName(String token) {
+    if (token == null) return null;
+    final List<String> parts = token.split('.');
+    if (parts.length != 3) {
+      return null;
+    }
+    final String payload = parts[1];
+    final String normalized = base64Url.normalize(payload);
+    final String resp = utf8.decode(base64Url.decode(normalized));
+    final payloadMap = json.decode(resp);
+    if (payloadMap is! Map<String, dynamic>) {
+      return null;
+    }
+    return payloadMap;
   }
 
   void _checkIsLogin()async{
@@ -68,7 +123,6 @@ class _MyLoginState extends State<MyLogin> {
       _checking = false;
     });
     if (accessToken != null) {
-      print("is Logged:::: ${prettyPrint(accessToken.toJson())}");
       final userData = await FacebookAuth.instance.getUserData();
       _accessToken = accessToken;
       setState(() {
@@ -78,9 +132,9 @@ class _MyLoginState extends State<MyLogin> {
   }
 
   void _printCredentials() {
-    print(
-      prettyPrint(_accessToken.toJson()),
-    );
+    // print(
+    //   prettyPrint(_accessToken.toJson()),
+    // );
   }
 
   Future<void> _login() async {
@@ -88,20 +142,20 @@ class _MyLoginState extends State<MyLogin> {
       setState(() {
         _checking = true;
       });
+
+
+
       _accessToken = await FacebookAuth.instance.login();
-      _printCredentials();
       final userData = await FacebookAuth.instance.getUserData();
       _userData = userData;
-      print(userData);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => FirstIntro()));
-      isLogin(true);
+      var graphResponse = await http.get(
+          'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture.width(200)&access_token=${_accessToken.token}');
+
+      var profile = json.decode(graphResponse.body);
+      // Update And Insert Records
+      update(profile['first_name'], profile['last_name'], profile['email'],'', 'FaceBook');
+
       print('Login Successful');
-      userData.forEach((key, value) {
-        if(key == 'gender'){
-          print('Value -->$value');
-        }
-      });
     } on FacebookAuthException catch (e) {
       print('${e.message}');
       switch (e.errorCode) {
@@ -133,7 +187,6 @@ class _MyLoginState extends State<MyLogin> {
     setState(() {});
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,7 +204,7 @@ class _MyLoginState extends State<MyLogin> {
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage('image/login.png'),
-                  fit: BoxFit.cover
+                  fit: BoxFit.fill
               )
           ),
           child: SingleChildScrollView(
@@ -213,9 +266,12 @@ class _MyLoginState extends State<MyLogin> {
                     ),
                   ),
 
-                  Container(margin: const EdgeInsets.only(top: 10),
-                    child: Text('Forgot Password', style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
+                  GestureDetector(
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPassword())),
+                    child: Container(margin: const EdgeInsets.only(top: 10),
+                      child: Text('Forgot Password', style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                   Container(margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -262,7 +318,11 @@ class _MyLoginState extends State<MyLogin> {
                                 image: AssetImage('image/facebook.png'),
                               ),
                             ),
-                            onTap: _login,
+                            onTap: (){
+                              // dbHelper.delete(2);
+                              _login();
+                              _query();
+                            },
                           ),
                         ),
 
@@ -308,30 +368,41 @@ class _MyLoginState extends State<MyLogin> {
     );
   }
 
-  void update(String fName,String lName,String email,String pass,String loginType) async{
+  void update(String fName,String lName,String email,String pass,String loginType) async {
     Map<String, dynamic> row = {
-      DatabaseHelper.columnfName : fName,
-      DatabaseHelper.columnlName : lName,
-      DatabaseHelper.columnEmail : email,
-      DatabaseHelper.columnPassword : pass,
-      DatabaseHelper.columnIsLoginWith : loginType,
+      DatabaseHelper.columnfName: fName,
+      DatabaseHelper.columnlName: lName,
+      DatabaseHelper.columnEmail: email,
+      DatabaseHelper.columnPassword: pass,
+      DatabaseHelper.columnIsLoginWith: loginType,
     };
+
     final data = await dbHelper.select(email);
 
-    data.forEach((element) {
-      if(element['email'] == email){
-        dbHelper.update(row,element['_id']);
-        print(element);
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => FirstIntro()));
-      }else{
-        Toast toast = Toast();
-        toast.overLay = false;
-        toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
-      }
-    });
-
+    if (data.length != 0) {
+          dbHelper.update(row, data[0]['_id']);
+          isLogin(true);
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => FirstIntro()));
+    }
+    else {
+      insertWithSocial(fName, lName, email, pass, loginType);
+      isLogin(true);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => FirstIntro()));
+    }
   }
+
+    void insertWithSocial(String fName,String lName,String email,String pass,String loginType){
+      Map<String, dynamic> row = {
+        DatabaseHelper.columnfName : fName,
+        DatabaseHelper.columnlName : lName,
+        DatabaseHelper.columnEmail : email,
+        DatabaseHelper.columnPassword : pass,
+        DatabaseHelper.columnIsLoginWith : loginType,
+      };
+      dbHelper.insert(row);
+    }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn(
@@ -387,7 +458,6 @@ class _MyLoginState extends State<MyLogin> {
     _sharedPreferences.setString('photoUrl',user.photoUrl);
 
     if(user!=null){
-      isLogin(true);
       update(firstName, lastName, user.email, '', 'Google');
     }
     return 'signInWithGoogle succeeded: $user';
@@ -395,25 +465,24 @@ class _MyLoginState extends State<MyLogin> {
 
   void signOutGoogle() async{
     await googleSignIn.signOut();
-
     print("User Sign Out");
   }
 
   void _loginWithDatabase() async {
     final data = await dbHelper.select(_emailTextController.text);
-    data.forEach((element) {
-      if(element['email'] == _emailTextController.text && element['password']==_passwordTextController.text){
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => FirstIntro()));
-        isLogin(true);
-      }else{
-        print('dfg');
-        Toast toast = Toast();
-        toast.overLay = false;
-        toast.showOverLay('User Exist', Colors.white, Colors.black54, context);
-      }
-    });
 
+    if(data.length != 0){
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => FirstIntro()));
+      isLogin(true);
+    }else{
+      Toast toast = Toast();
+      toast.overLay = false;
+      toast.showOverLay('User Does\'t Exist', Colors.white, Colors.black54, context);
+      Navigator.push(context, MaterialPageRoute(
+        builder: (context) => Register()
+      ));
+    }
   }
 
   // Future<String> signInWithGoogle1() async {
@@ -464,20 +533,12 @@ class _MyLoginState extends State<MyLogin> {
   // }
 
 
-  // void _query(String email,String pass) async {
-  //   final allRows = await dbHelper.queryAllRows();
-  //
-  //   allRows.forEach((row) {
-  //     print('User Name is ${row[DatabaseHelper.columnEmail]}');
-  //     if(email == row[DatabaseHelper.columnEmail] && pass == row[DatabaseHelper.columnPassword]){
-  //       print('Matched');
-  //       isLogin(true);
-  //       Navigator.pushReplacement(
-  //           context, MaterialPageRoute(builder: (context) => FirstIntro()));
-  //     }
-  //
-  //   });
-  // }
+  void _query() async {
+    final allRows = await dbHelper.queryAllRows();
+    allRows.forEach((row) {
+      print(row);
+    });
+  }
 
   void isLogin(bool isLogin) async {
    _sharedPreferences = await SharedPreferences.getInstance();
