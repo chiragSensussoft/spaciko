@@ -1,8 +1,8 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:spaciko/Home/Ui/Profile/Setting.dart';
 import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
@@ -25,6 +25,50 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
 
+  //Push Notification
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+  _getToken() {
+    _firebaseMessaging.getToken().then((value) {
+      print('Device Token: $value');
+    });
+  }
+
+  List<Message> messagesList;
+
+  _configureFirebaseListeners() {
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print('onMessage: $message');
+        _setMessage(message);
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print('onLaunch: $message');
+        _setMessage(message);
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print('onResume: $message');
+        _setMessage(message);
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+      const IosNotificationSettings(sound: true, badge: true, alert: true),
+    );
+  }
+
+  _setMessage(Map<String, dynamic> message) {
+    final notification = message['notification'];
+    final data = message['data'];
+    final String title = notification['title'];
+    final String body = notification['body'];
+    String mMessage = data['Message'];
+    print("Title: $title, body: $body, message: ${mMessage??'Hello'}");
+    setState(() {
+      Message msg = Message(title, body, mMessage??'Hello');
+      messagesList.add(msg);
+    });
+  }
+
   SharedPreferences prefs;
   String name;
   String url;
@@ -38,6 +82,10 @@ class _ProfileState extends State<Profile> {
         url = value.getString('photoUrl');
       })
     });
+
+    messagesList = List<Message>();
+    _getToken();
+    _configureFirebaseListeners();
   }
 
   SharedPreferences _sharedPreferences;
@@ -68,52 +116,74 @@ class _ProfileState extends State<Profile> {
                           borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(20),
                               bottomRight: Radius.circular(20))),
-                      child: Container(
-                        height: 50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(margin: const EdgeInsets.only(right: 15, bottom: 30),
-                              alignment: Alignment.center,
-                              child: Stack(
-                                alignment: Alignment.topRight,
-                                children: [
-                                  Image.asset('image/ic_notification_white.png',width: 24,height: 24,),
-                                  Positioned(
-                                    right: 1,
-                                    child: Container(
-                                      transform:  Matrix4.translationValues(-2.0, -5.0, 1.0),
-                                      alignment: Alignment.center,
-                                      height: 16,
-                                      width: 16,
-                                      decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius: BorderRadius.circular(30)
-                                      ),
-                                      child: Text('1',style: TextStyle(color: Colors.white,fontSize: 10),),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            )
-                          ],
-                        ),
-                      )
                     ),
+                  Container(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            width: 100,
+                            height: 100,
+                            alignment: Alignment.bottomCenter,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Container(
+                              height: 100,
+                              width: 100,
+                              child: CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  backgroundImage: NetworkImage(url ??
+                                      'https://chiragkalathiya1111.000webhostapp.com/ic_defult.png')),
+                            )),
+                      ],
+                    ),
+                  ),
                      Container(
-                       alignment: Alignment.bottomCenter,
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.circular(30)
+                       height: 150,
+                       child: Row(
+                         mainAxisAlignment: MainAxisAlignment.end,
+                         crossAxisAlignment: CrossAxisAlignment.center,
+                         children: [
+                           InkWell(
+                             onTap: (){
+                               _dialog();
+                             },
+                             child:  Container(
+                               height: 50,
+                               child: Row(
+                                 mainAxisAlignment: MainAxisAlignment.end,
+                                 crossAxisAlignment: CrossAxisAlignment.end,
+                                 children: [
+                                   Container(margin: const EdgeInsets.only(right: 15, bottom: 30),
+                                       alignment: Alignment.center,
+                                       child: Stack(
+                                         alignment: Alignment.topRight,
+                                         children: [
+                                           Image.asset('image/ic_notification_white.png',width: 24,height: 24,),
+                                           Positioned(
+                                             right: 1,
+                                             child: Container(
+                                               transform:  Matrix4.translationValues(-2.0, -5.0, 1.0),
+                                               alignment: Alignment.center,
+                                               height: 16,
+                                               width: 16,
+                                               decoration: BoxDecoration(
+                                                   color: Colors.red,
+                                                   borderRadius: BorderRadius.circular(30)
+                                               ),
+                                               child: Text(messagesList.length.toString(),style: TextStyle(color: Colors.white,fontSize: 10),),
+                                             ),
+                                           ),
+                                         ],
+                                       )
+                                   )
+                                 ],
+                               ),
+                             ),
+                           )
+                         ],
                        ),
-                       child: Container(
-                         height: 100,
-                         width: 100,
-                         child: CircleAvatar(
-                           backgroundColor: Colors.transparent,
-                           backgroundImage: NetworkImage(url??'https://chiragkalathiya1111.000webhostapp.com/ic_defult.png')
-                         ),
-                       )
                      )
                   ],
                  ),
@@ -140,7 +210,39 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (context) => Setting())),
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (_){
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+                                    elevation: 16,
+                                    child: Container(
+                                      height: MediaQuery.of(context).size.height/3,
+                                      width: MediaQuery.of(context).size.width/2,
+                                      child:  ListView.builder(
+                                        itemCount: null == messagesList ? 0 : messagesList.length,
+                                        itemBuilder: (BuildContext context, int index) {
+                                          return Card(
+                                            child: Padding(
+                                              padding: EdgeInsets.all(10.0),
+                                              child: Text(
+                                                messagesList[index].message,
+                                                style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                }
+                            );
+                          },
+                              // Navigator.push(context, MaterialPageRoute(builder: (context) => Setting())),
                           child: Container(margin: const EdgeInsets.only(top: 30),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -271,5 +373,49 @@ class _ProfileState extends State<Profile> {
           ),
         ),
       );
+  }
+  Future _dialog(){
+    return  showDialog(
+        context: context,
+        builder: (_){
+          return Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+            elevation: 16,
+            child: Column(
+              children: [
+                ListView.builder(
+                  itemCount: null == messagesList ? 0 : messagesList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          messagesList[index].message,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            )
+          );
+        }
+    );
+}
+}
+
+class Message {
+  String title;
+  String body;
+  String message;
+  Message(title, body, message) {
+    this.title = title;
+    this.body = body;
+    this.message = message;
+
   }
 }
