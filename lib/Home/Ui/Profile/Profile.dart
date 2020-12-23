@@ -139,50 +139,79 @@ class _ProfileState extends State<Profile> {
                       ],
                     ),
                   ),
-                     Container(
-                       height: 150,
-                       child: Row(
-                         mainAxisAlignment: MainAxisAlignment.end,
-                         crossAxisAlignment: CrossAxisAlignment.center,
-                         children: [
-                           InkWell(
-                             onTap: (){
-                               _dialog();
-                             },
-                             child:  Container(
-                               height: 50,
-                               child: Row(
-                                 mainAxisAlignment: MainAxisAlignment.end,
-                                 crossAxisAlignment: CrossAxisAlignment.end,
-                                 children: [
-                                   Container(margin: const EdgeInsets.only(right: 15, bottom: 30),
-                                       alignment: Alignment.center,
-                                       child: Stack(
-                                         alignment: Alignment.topRight,
-                                         children: [
-                                           Image.asset('image/ic_notification_white.png',width: 24,height: 24,),
-                                           Positioned(
-                                             right: 1,
-                                             child: Container(
-                                               transform:  Matrix4.translationValues(-2.0, -5.0, 1.0),
-                                               alignment: Alignment.center,
-                                               height: 16,
-                                               width: 16,
-                                               decoration: BoxDecoration(
-                                                   color: Colors.red,
-                                                   borderRadius: BorderRadius.circular(30)
-                                               ),
-                                               child: Text(messagesList.length.toString(),style: TextStyle(color: Colors.white,fontSize: 10),),
+                     GestureDetector(
+                       onTap: (){
+                         showDialog(
+                             context: context,
+                             builder: (_){
+                               return Dialog(
+                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+                                 elevation: 16,
+                                 child: Container(
+                                   height: MediaQuery.of(context).size.height/3,
+                                   width: MediaQuery.of(context).size.width/2,
+                                   child:  ListView.builder(
+                                     itemCount: null == messagesList ? 0 : messagesList.length,
+                                     itemBuilder: (BuildContext context, int index) {
+                                       return Card(
+                                         child: Padding(
+                                           padding: EdgeInsets.all(10.0),
+                                           child: Text(
+                                             messagesList[index].message,
+                                             style: TextStyle(
+                                               fontSize: 16.0,
+                                               color: Colors.black,
                                              ),
                                            ),
-                                         ],
-                                       )
-                                   )
-                                 ],
+                                         ),
+                                       );
+                                     },
+                                   ),
+                                 ),
+                               );
+                             }
+                         );
+                       },
+                       child: Container(
+                         height: 150,
+                         child: Row(
+                           mainAxisAlignment: MainAxisAlignment.end,
+                           crossAxisAlignment: CrossAxisAlignment.center,
+                           children: [
+                              Container(
+                                 height: 50,
+                                 child: Row(
+                                   mainAxisAlignment: MainAxisAlignment.end,
+                                   crossAxisAlignment: CrossAxisAlignment.end,
+                                   children: [
+                                     Container(margin: const EdgeInsets.only(right: 15, bottom: 30),
+                                         alignment: Alignment.center,
+                                         child: Stack(
+                                           alignment: Alignment.topRight,
+                                           children: [
+                                             Image.asset('image/ic_notification_white.png',width: 24,height: 24,),
+                                             Positioned(
+                                               right: 1,
+                                               child: Container(
+                                                 transform:  Matrix4.translationValues(-2.0, -5.0, 1.0),
+                                                 alignment: Alignment.center,
+                                                 height: 16,
+                                                 width: 16,
+                                                 decoration: BoxDecoration(
+                                                     color: Colors.red,
+                                                     borderRadius: BorderRadius.circular(30)
+                                                 ),
+                                                 child: Text(messagesList.length.toString(),style: TextStyle(color: Colors.white,fontSize: 10),),
+                                               ),
+                                             ),
+                                           ],
+                                         )
+                                     )
+                                   ],
+                                 ),
                                ),
-                             ),
-                           )
-                         ],
+                           ],
+                         ),
                        ),
                      )
                   ],
@@ -242,7 +271,7 @@ class _ProfileState extends State<Profile> {
                                 }
                             );
                           },
-                              // Navigator.push(context, MaterialPageRoute(builder: (context) => Setting())),
+                          // Navigator.push(context, MaterialPageRoute(builder: (context) => Setting())),
                           child: Container(margin: const EdgeInsets.only(top: 30),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -374,38 +403,6 @@ class _ProfileState extends State<Profile> {
         ),
       );
   }
-  Future _dialog(){
-    return  showDialog(
-        context: context,
-        builder: (_){
-          return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-            elevation: 16,
-            child: Column(
-              children: [
-                ListView.builder(
-                  itemCount: null == messagesList ? 0 : messagesList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Text(
-                          messagesList[index].message,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            )
-          );
-        }
-    );
-}
 }
 
 class Message {
