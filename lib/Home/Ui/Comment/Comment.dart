@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'package:spaciko/Home/Ui/Comment/SpecialOffer.dart';
+import 'package:spaciko/Home/Ui/Profile/Profile.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
 import 'Widget/Bubble.dart';
@@ -14,7 +19,9 @@ class CommentScreen extends StatefulWidget {
   @override
   _CommentScreenState createState() => _CommentScreenState();
 }
-
+// Future<dynamic> myBackgroundHandler(Map<String, dynamic> message) {
+//   return _CommentScreenState()._showNotification(message);
+// }
 class _CommentScreenState extends State<CommentScreen> {
   final TextStyle textStyle = TextStyle(color: Colors.white);
   List<String> temp = List<String>();
@@ -24,12 +31,103 @@ class _CommentScreenState extends State<CommentScreen> {
   int _curStep =0;
   bool title = false;
   bool btn = true;
+  List<String> chatMessage;
+  StreamSubscription iosSubscription;
+  // Future selectNotification(String payload) async {
+  //   await flutterLocalNotificationsPlugin.cancelAll();
+  // }
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  List<NotificationMessage> messagesList;
+  _configureFirebaseListeners() {
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        // print(': $message');
+        // final notification = message['notification'];
+        // final data = message['data'];
+        // final String title = notification['title'];
+        // final String body = notification['body'];
+        // String mMessage = data['Message'];
+        // NotificationMessage msg = NotificationMessage(title, body, mMessage??'Hello');
+        // messagesList.add(msg);
+        print(message['notification']['body']);
+        // _setMessage(message);
+        setState(() {
+          chatMessage.add(message['notification']['body']);
+        });
+        print(chatMessage);
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print('onLaunch: $message');
+        _setMessage(message);
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print('onResume: $message');
+        _setMessage(message);
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+      const IosNotificationSettings(sound: true, badge: true, alert: true),
+    );
+  }
 
+  _setMessage(Map<String, dynamic> message) {
+    final notification = message['notification'];
+    final data = message['data'];
+    final String title = notification['title'];
+    final String body = notification['body'];
+    String mMessage = data['Message'];
+    print("Title: $title, body: $body, message: ${mMessage??'Hello'}");
+    setState(() {
+      NotificationMessage msg = NotificationMessage(title, body, mMessage??'Hello');
+      messagesList.add(msg);
+    });
+  }
   @override
   void initState() {
     super.initState();
     temp.add('Hello');
+    messagesList = List<NotificationMessage>();
+    chatMessage = List<String>();
+    _configureFirebaseListeners();
   }
+  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  //
+  // Future _showNotification(Map<String, dynamic> message) async {
+  //   var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+  //     'channel id',
+  //     'channel name',
+  //     'channel desc',
+  //     importance: Importance.max,
+  //     priority: Priority.high,
+  //   );
+  //   final notification = message['notification'];
+  //   final String body = notification['body'];
+  //   final String title = notification['title'];
+  //   // messagesList.add(body);
+  //   var platformChannelSpecifics =
+  //   new NotificationDetails(android: androidPlatformChannelSpecifics);
+  //   await flutterLocalNotificationsPlugin.show(
+  //     0,
+  //     '$title',
+  //     '$body',
+  //     platformChannelSpecifics,
+  //     payload: 'Default_Sound',
+  //   );
+  // }
+  //
+  // _setMessage(Map<String, dynamic> message) {
+  //   final notification = message['notification'];
+  //   final data = message['data'];
+  //   final String title = notification['title'];
+  //   final String body = notification['body'];
+  //   String mMessage = data['Message'];
+  //   print("Title: $title, body: $body, message: ${mMessage}");
+  //   setState(() {
+  //     NotificationMessage msg = NotificationMessage(title, body, mMessage??'Hello');
+  //     messagesList.add(msg);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +149,7 @@ class _CommentScreenState extends State<CommentScreen> {
                           title = false;
                           btn = true;
                           setState(() {
-                           _curStep =0;
+                            _curStep =0;
                           });
                         },
                       ),
@@ -60,7 +158,7 @@ class _CommentScreenState extends State<CommentScreen> {
                         child: Container(
                           alignment: Alignment.center,
                           child: Text('Spacial Offer',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,
-                          fontFamily: 'poppins_semibold',fontSize: 20),),
+                              fontFamily: 'poppins_semibold',fontSize: 20),),
                         ),
                       ),
                       Visibility(
@@ -92,80 +190,80 @@ class _CommentScreenState extends State<CommentScreen> {
               ),
 
               Expanded(
-                child:_curStep==0?Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.colorLightBlue50,
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20)),
-                  ),
-                  child: Column(
-                    children: [
-                     _chat(),
-                      Column(
+                  child:_curStep==0?Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.colorLightBlue50,
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20)),
+                      ),
+                      child: Column(
                         children: [
-                          Container(
-                            margin:const EdgeInsets.all(10),
-                            width: MediaQuery.of(context).size.width,
-                            color:Colors.white,
-                            child: Text('Translate this conversation to english powered by google',textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.black87,fontSize: 17,fontFamily: 'poppins_regular'),),
-                          ),
-                          Stack(
+                          _chat(),
+                          Column(
                             children: [
-                              Container(margin: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25),
-                                  color: Colors.white,
-                                  border: Border.all(color: Colors.black54)
-                                ),
-                                child: Form(
-                                  child: TextFormField(
-                                    onChanged: (String val){
-                                      msg = val;
-                                    },
-                                    controller: _controller,
-                                    decoration: InputDecoration(
-                                      focusColor: Colors.black,
-                                        enabledBorder: InputBorder.none,
-                                        contentPadding: const EdgeInsets.fromLTRB(
-                                            20, 0, 50, 0),
-                                       border: InputBorder.none,
-                                      hintText: 'Type message...',
-                                      hintStyle: TextStyle(fontSize: 18)
+                              Container(
+                                margin:const EdgeInsets.all(10),
+                                width: MediaQuery.of(context).size.width,
+                                color:Colors.white,
+                                child: Text('Translate this conversation to english powered by google',textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.black87,fontSize: 17,fontFamily: 'poppins_regular'),),
+                              ),
+                              Stack(
+                                children: [
+                                  Container(margin: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(25),
+                                        color: Colors.white,
+                                        border: Border.all(color: Colors.black54)
+                                    ),
+                                    child: Form(
+                                      child: TextFormField(
+                                        onChanged: (String val){
+                                          msg = val;
+                                        },
+                                        controller: _controller,
+                                        decoration: InputDecoration(
+                                            focusColor: Colors.black,
+                                            enabledBorder: InputBorder.none,
+                                            contentPadding: const EdgeInsets.fromLTRB(
+                                                20, 0, 50, 0),
+                                            border: InputBorder.none,
+                                            hintText: 'Type message...',
+                                            hintStyle: TextStyle(fontSize: 18)
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                              Container(padding: const EdgeInsets.only(right: 15),
-                                height: 50,
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                  child:Image(
-                                    height: 40,
-                                    width: 40,
-                                    image: AssetImage('image/ic_send_msg.png'),
-                                  ),
-                                  onTap: (){
-                                   setState(() {
-                                     sendFcmMessage(_controller.text);
-                                     temp.add(msg);
-                                     _controller.clear();
-                                     scrollController.animateTo(
-                                       scrollController.position.maxScrollExtent,
-                                       curve: Curves.easeIn,
-                                       duration: const Duration(milliseconds: 200),
-                                     );
-                                   });
-                                  },
-                                )
+                                  Container(padding: const EdgeInsets.only(right: 15),
+                                      height: 50,
+                                      alignment: Alignment.centerRight,
+                                      child: GestureDetector(
+                                        child:Image(
+                                          height: 40,
+                                          width: 40,
+                                          image: AssetImage('image/ic_send_msg.png'),
+                                        ),
+                                        onTap: (){
+                                          setState(() {
+                                            sendFcmMessage(_controller.text);
+                                            temp.add(msg);
+                                            _controller.clear();
+                                            scrollController.animateTo(
+                                              scrollController.position.maxScrollExtent,
+                                              curve: Curves.easeIn,
+                                              duration: const Duration(milliseconds: 200),
+                                            );
+                                          });
+                                        },
+                                      )
+                                  )
+                                ],
                               )
                             ],
                           )
                         ],
                       )
-                    ],
-                  )
-                ):SpacialOffer()
+                  ):SpacialOffer()
               )
             ],
           ),
@@ -182,20 +280,19 @@ class _CommentScreenState extends State<CommentScreen> {
         "key=AAAAcbLNDRI:APA91bGkf5wnZQDLKWtnHUw_HtVhiyuRD9_GVTJfOKHKnWllGUe3uSsg6rfvuW1hX2uTMeeipeofW7KtoQs3OX-axUsE-g7aS1xdsJcUmuntq6po7h2wSmP_njhZan1F5pZECgt6OaOL",
       };
       var request = {
-        "notification": {
-          "title": 'Spaciko',
-          "text": msg,
-          "sound": "default",
-          "color": "#990000",
+        'notification': {'title': "Spaciko", 'body': msg},
+        'data': {
+          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          'type': 'COMMENT'
         },
-        "priority": "high",
-        "to": "cyOXVZmdT5egWotf5zuBnq:APA91bHGmLORJx6PmGeZsUN41Z_tIgnq_jwxgqnXyoxNSlIY1-uqPAvoeH3nVs-LjuiTak4ZVwxsjlCa9jr1SxppPgSyY6TFMH6cqKEbsSDnfjeuZZnyl7qozRKfSp7oOLpH8zNa7a04",
+        'to': 'cyOXVZmdT5egWotf5zuBnq:APA91bHGmLORJx6PmGeZsUN41Z_tIgnq_jwxgqnXyoxNSlIY1-uqPAvoeH3nVs-LjuiTak4ZVwxsjlCa9jr1SxppPgSyY6TFMH6cqKEbsSDnfjeuZZnyl7qozRKfSp7oOLpH8zNa7a04'
       };
+      // oppo :- cyOXVZmdT5egWotf5zuBnq:APA91bHGmLORJx6PmGeZsUN41Z_tIgnq_jwxgqnXyoxNSlIY1-uqPAvoeH3nVs-LjuiTak4ZVwxsjlCa9jr1SxppPgSyY6TFMH6cqKEbsSDnfjeuZZnyl7qozRKfSp7oOLpH8zNa7a04
       var client = new Client();
       var response = await client.post(url, headers: header, body: json.encode(request));
       if(response.statusCode ==200){
         print('Success');
-       return true;
+        return true;
       }
       return true;
     } catch (e, s) {
@@ -210,14 +307,14 @@ class _CommentScreenState extends State<CommentScreen> {
       child: ListView.builder(
         scrollDirection: Axis.vertical,
         controller: scrollController,
-        itemCount: temp.length,
+        itemCount: chatMessage.length,
         itemBuilder: (_, index) {
           return Container(
             padding: const EdgeInsets.only(top: 10),
             child: Column(
               children: [
-                Bubble(isMe: true,message: temp[index]),
-                Bubble(isMe: false,message: temp[index].split('').reversed.join(),)
+                Bubble(isMe: true,message: chatMessage[index]),
+                Bubble(isMe: false,message: chatMessage[index].split('').reversed.join(),)
               ],
             ),
           );
