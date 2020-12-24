@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:spaciko/Home/Ui/Comment/SpecialOffer.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
@@ -144,8 +147,14 @@ class _CommentScreenState extends State<CommentScreen> {
                                   ),
                                   onTap: (){
                                    setState(() {
-                                       temp.add(msg);
-                                       _controller.text ="";
+                                     sendFcmMessage(_controller.text);
+                                     temp.add(msg);
+                                     _controller.clear();
+                                     scrollController.animateTo(
+                                       scrollController.position.maxScrollExtent,
+                                       curve: Curves.easeIn,
+                                       duration: const Duration(milliseconds: 200),
+                                     );
                                    });
                                   },
                                 )
@@ -164,10 +173,43 @@ class _CommentScreenState extends State<CommentScreen> {
     );
   }
 
+  static Future<bool> sendFcmMessage(String msg) async {
+    try {
+      var url = 'https://fcm.googleapis.com/fcm/send';
+      var header = {
+        "Content-Type": "application/json",
+        "Authorization":
+        "key=AAAAcbLNDRI:APA91bGkf5wnZQDLKWtnHUw_HtVhiyuRD9_GVTJfOKHKnWllGUe3uSsg6rfvuW1hX2uTMeeipeofW7KtoQs3OX-axUsE-g7aS1xdsJcUmuntq6po7h2wSmP_njhZan1F5pZECgt6OaOL",
+      };
+      var request = {
+        "notification": {
+          "title": 'Spaciko',
+          "text": msg,
+          "sound": "default",
+          "color": "#990000",
+        },
+        "priority": "high",
+        "to": "cyOXVZmdT5egWotf5zuBnq:APA91bHGmLORJx6PmGeZsUN41Z_tIgnq_jwxgqnXyoxNSlIY1-uqPAvoeH3nVs-LjuiTak4ZVwxsjlCa9jr1SxppPgSyY6TFMH6cqKEbsSDnfjeuZZnyl7qozRKfSp7oOLpH8zNa7a04",
+      };
+      var client = new Client();
+      var response = await client.post(url, headers: header, body: json.encode(request));
+      if(response.statusCode ==200){
+        print('Success');
+       return true;
+      }
+      return true;
+    } catch (e, s) {
+      print(e);
+      return false;
+    }
+
+  }
+  var scrollController = ScrollController();
   Widget _chat() {
     return Flexible(
       child: ListView.builder(
         scrollDirection: Axis.vertical,
+        controller: scrollController,
         itemCount: temp.length,
         itemBuilder: (_, index) {
           return Container(

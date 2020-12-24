@@ -1,91 +1,101 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'dart:async';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MaterialApp(home: MyApp()));
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  State<StatefulWidget> createState() {
+    return MyAppState();
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  String textValue = 'Hello World !';
-  FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+Future<dynamic> myBackgroundHandler(Map<String, dynamic> message) {
+  return MyAppState()._showNotification(message);
+}
+
+class MyAppState extends State<MyApp> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  new FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin();
+
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('notification'),
+      ),
+      body: Center(
+        child: Text('button'),
+      ),
+    );
+  }
+
+  Future _showNotification(Map<String, dynamic> message) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+      'channel id',
+      'channel name',
+      'channel desc',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    var platformChannelSpecifics =
+    new NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'new message arived',
+      'i want ${message['data']['title']} for ${message['data']['price']}',
+      platformChannelSpecifics,
+      payload: 'Default_Sound',
+    );
+  }
+
+  getTokenz() async {
+    String token = await _firebaseMessaging.getToken();
+    print(token);
+  }
+
+  Future selectNotification(String payload) async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
 
   @override
   void initState() {
+    var initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    var initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: selectNotification);
     super.initState();
 
-    var android = new AndroidInitializationSettings('mipmap/ic_launcher');
-    var ios = new IOSInitializationSettings();
-    var platform = new InitializationSettings(android: android,iOS: ios);
-    flutterLocalNotificationsPlugin.initialize(platform);
-
-    firebaseMessaging.configure(
-      onLaunch: (Map<String, dynamic> msg) {
-        print(" onLaunch called ${(msg)}");
-      },
-      onResume: (Map<String, dynamic> msg) {
-        print(" onResume called ${(msg)}");
-      },
-      onMessage: (Map<String, dynamic> msg) {
-        showNotification(msg);
-        print(" onMessage called ${(msg)}");
+    _firebaseMessaging.configure(
+      onBackgroundMessage: myBackgroundHandler,
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('new message arived'),
+                content: Text(
+                    'i want ${message['notification']['title']} for ${message['notification']['body']}'),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
       },
     );
-    firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, alert: true, badge: true));
-    firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings setting) {
-      print('IOS Setting Registed');
-    });
-    firebaseMessaging.getToken().then((token) {
-      update(token);
-    });
-  }
 
-  showNotification(Map<String, dynamic> msg) async {
-    var android = new AndroidNotificationDetails(
-      'sdffds dsffds',
-      "CHANNLE NAME",
-      "channelDescription",
-    );
-    var iOS = new IOSNotificationDetails();
-    var platform = new NotificationDetails(android: android,iOS: iOS);
-    await flutterLocalNotificationsPlugin.show(
-        0, "This is title", "this is demo", platform);
-  }
-
-  update(String token) {
-    print(token);
-    DatabaseReference databaseReference = new FirebaseDatabase().reference();
-    databaseReference.child('fcm-token/${token}').set({"token": token});
-    textValue = token;
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Push Notification'),
-        ),
-        body: new Center(
-          child: new Column(
-            children: <Widget>[
-              new Text(
-                textValue,
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+    getTokenz();
   }
 }

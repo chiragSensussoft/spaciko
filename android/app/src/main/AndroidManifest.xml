@@ -2,11 +2,14 @@
     package="com.ck.spaciko">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-   <application
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
+       android:name=".Application"
         android:label="spaciko"
         android:icon="@mipmap/launcher_icon">
        <meta-data android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyCnGL7hF2rodHZ_lE87OozQCZdCHk3wEOM"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

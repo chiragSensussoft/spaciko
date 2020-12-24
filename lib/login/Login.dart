@@ -89,23 +89,6 @@ class _MyLoginState extends State<MyLogin> {
       print(_homeScreenText);
     });
   }
-
-  static Map<String, dynamic> parseName(String token) {
-    if (token == null) return null;
-    final List<String> parts = token.split('.');
-    if (parts.length != 3) {
-      return null;
-    }
-    final String payload = parts[1];
-    final String normalized = base64Url.normalize(payload);
-    final String resp = utf8.decode(base64Url.decode(normalized));
-    final payloadMap = json.decode(resp);
-    if (payloadMap is! Map<String, dynamic>) {
-      return null;
-    }
-    return payloadMap;
-  }
-
   void _checkIsLogin()async{
     _sharedPreferences = await SharedPreferences.getInstance();
       if (_sharedPreferences.getBool('isLogin')== true) {
@@ -142,7 +125,6 @@ class _MyLoginState extends State<MyLogin> {
       setState(() {
         _checking = true;
       });
-
 
 
       _accessToken = await FacebookAuth.instance.login();

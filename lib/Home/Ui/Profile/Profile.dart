@@ -1,10 +1,17 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/widgets/Pelette.dart';
+
+import 'Setting.dart';
 
 class MyScreen extends StatelessWidget {
   @override
@@ -23,19 +30,47 @@ class Profile extends StatefulWidget {
   _ProfileState createState() => _ProfileState();
 }
 
+Future<dynamic> myBackgroundHandler(Map<String, dynamic> message) {
+  return _ProfileState()._showNotification(message);
+}
 class _ProfileState extends State<Profile> {
+
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+
+  Future _showNotification(Map<String, dynamic> message) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+      'channel id',
+      'channel name',
+      'channel desc',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    var platformChannelSpecifics =
+    new NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'new message arived',
+      'i want ${message['notification']['title']} for ${message['data']['Message']}',
+      platformChannelSpecifics,
+      payload: 'Default_Sound',
+    );
+  }
+
+  getToken() async {
+    String token = await _firebaseMessaging.getToken();
+    print('Device Token: $token');
+  }
+
+  Future selectNotification(String payload) async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+  }
 
   //Push Notification
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
-  _getToken() {
-    _firebaseMessaging.getToken().then((value) {
-      print('Device Token: $value');
-    });
-  }
-
   List<Message> messagesList;
-
   _configureFirebaseListeners() {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
@@ -47,7 +82,25 @@ class _ProfileState extends State<Profile> {
         _setMessage(message);
       },
       onResume: (Map<String, dynamic> message) async {
+        print('Message called');
         print('onResume: $message');
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('new message arived'),
+                content: Text(
+                    '${message['notification']['title']} for ${message['notification']['text']}'),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
         _setMessage(message);
       },
     );
@@ -55,7 +108,6 @@ class _ProfileState extends State<Profile> {
       const IosNotificationSettings(sound: true, badge: true, alert: true),
     );
   }
-
   _setMessage(Map<String, dynamic> message) {
     final notification = message['notification'];
     final data = message['data'];
@@ -72,6 +124,7 @@ class _ProfileState extends State<Profile> {
   SharedPreferences prefs;
   String name;
   String url;
+  StreamSubscription iosSubscription;
   @override
   void initState(){
     super.initState();
@@ -82,10 +135,34 @@ class _ProfileState extends State<Profile> {
         url = value.getString('photoUrl');
       })
     });
+    if (Platform.isIOS) {
+      iosSubscription = _firebaseMessaging.onIosSettingsRegistered.listen((data) {
+        // save the token  OR subscribe to a topic here
+      });
 
+      _firebaseMessaging.requestNotificationPermissions(IosNotificationSettings());
+    }
+    var initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    var initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: selectNotification);
+    super.initState();
+
+    _firebaseMessaging.configure(
+      onBackgroundMessage: myBackgroundHandler,
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+        _setMessage(message);
+        myBackgroundHandler(message);
+      },
+    );
+
+    getToken();
     messagesList = List<Message>();
-    _getToken();
-    _configureFirebaseListeners();
+    // _configureFirebaseListeners();
   }
 
   SharedPreferences _sharedPreferences;
@@ -240,38 +317,8 @@ class _ProfileState extends State<Profile> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            showDialog(
-                                context: context,
-                                builder: (_){
-                                  return Dialog(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-                                    elevation: 16,
-                                    child: Container(
-                                      height: MediaQuery.of(context).size.height/3,
-                                      width: MediaQuery.of(context).size.width/2,
-                                      child:  ListView.builder(
-                                        itemCount: null == messagesList ? 0 : messagesList.length,
-                                        itemBuilder: (BuildContext context, int index) {
-                                          return Card(
-                                            child: Padding(
-                                              padding: EdgeInsets.all(10.0),
-                                              child: Text(
-                                                messagesList[index].message,
-                                                style: TextStyle(
-                                                  fontSize: 16.0,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                }
-                            );
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Setting()));
                           },
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => Setting())),
                           child: Container(margin: const EdgeInsets.only(top: 30),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
