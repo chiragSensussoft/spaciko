@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart';
 import 'package:spaciko/Home/Ui/Comment/SpecialOffer.dart';
 import 'package:spaciko/Home/Ui/Profile/Profile.dart';
@@ -19,9 +17,7 @@ class CommentScreen extends StatefulWidget {
   @override
   _CommentScreenState createState() => _CommentScreenState();
 }
-// Future<dynamic> myBackgroundHandler(Map<String, dynamic> message) {
-//   return _CommentScreenState()._showNotification(message);
-// }
+
 class _CommentScreenState extends State<CommentScreen> {
   final TextStyle textStyle = TextStyle(color: Colors.white);
   List<String> temp = List<String>();
@@ -31,30 +27,17 @@ class _CommentScreenState extends State<CommentScreen> {
   int _curStep =0;
   bool title = false;
   bool btn = true;
-  List<String> chatMessage;
+  List<ChatMessage> chatMessage;
   StreamSubscription iosSubscription;
-  // Future selectNotification(String payload) async {
-  //   await flutterLocalNotificationsPlugin.cancelAll();
-  // }
+
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   List<NotificationMessage> messagesList;
   _configureFirebaseListeners() {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        // print(': $message');
-        // final notification = message['notification'];
-        // final data = message['data'];
-        // final String title = notification['title'];
-        // final String body = notification['body'];
-        // String mMessage = data['Message'];
-        // NotificationMessage msg = NotificationMessage(title, body, mMessage??'Hello');
-        // messagesList.add(msg);
-        print(message['notification']['body']);
-        // _setMessage(message);
         setState(() {
-          chatMessage.add(message['notification']['body']);
+          chatMessage.add(ChatMessage(message: message['notification']['body']));
         });
-        print(chatMessage);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('onLaunch: $message');
@@ -76,7 +59,7 @@ class _CommentScreenState extends State<CommentScreen> {
     final String title = notification['title'];
     final String body = notification['body'];
     String mMessage = data['Message'];
-    print("Title: $title, body: $body, message: ${mMessage??'Hello'}");
+    print("Title: $title, body: $body, message: ${mMessage}");
     setState(() {
       NotificationMessage msg = NotificationMessage(title, body, mMessage??'Hello');
       messagesList.add(msg);
@@ -87,47 +70,10 @@ class _CommentScreenState extends State<CommentScreen> {
     super.initState();
     temp.add('Hello');
     messagesList = List<NotificationMessage>();
-    chatMessage = List<String>();
+    chatMessage = List<ChatMessage>();
     _configureFirebaseListeners();
   }
-  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  //
-  // Future _showNotification(Map<String, dynamic> message) async {
-  //   var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-  //     'channel id',
-  //     'channel name',
-  //     'channel desc',
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //   );
-  //   final notification = message['notification'];
-  //   final String body = notification['body'];
-  //   final String title = notification['title'];
-  //   // messagesList.add(body);
-  //   var platformChannelSpecifics =
-  //   new NotificationDetails(android: androidPlatformChannelSpecifics);
-  //   await flutterLocalNotificationsPlugin.show(
-  //     0,
-  //     '$title',
-  //     '$body',
-  //     platformChannelSpecifics,
-  //     payload: 'Default_Sound',
-  //   );
-  // }
-  //
-  // _setMessage(Map<String, dynamic> message) {
-  //   final notification = message['notification'];
-  //   final data = message['data'];
-  //   final String title = notification['title'];
-  //   final String body = notification['body'];
-  //   String mMessage = data['Message'];
-  //   print("Title: $title, body: $body, message: ${mMessage}");
-  //   setState(() {
-  //     NotificationMessage msg = NotificationMessage(title, body, mMessage??'Hello');
-  //     messagesList.add(msg);
-  //   });
-  // }
+
 
   @override
   Widget build(BuildContext context) {
@@ -246,6 +192,8 @@ class _CommentScreenState extends State<CommentScreen> {
                                         onTap: (){
                                           setState(() {
                                             sendFcmMessage(_controller.text);
+                                            chatMessage.add(ChatMessage(message: _controller.text));
+                                            print(chatMessage.map((e) => e.message));
                                             temp.add(msg);
                                             _controller.clear();
                                             scrollController.animateTo(
@@ -280,7 +228,7 @@ class _CommentScreenState extends State<CommentScreen> {
         "key=AAAAcbLNDRI:APA91bGkf5wnZQDLKWtnHUw_HtVhiyuRD9_GVTJfOKHKnWllGUe3uSsg6rfvuW1hX2uTMeeipeofW7KtoQs3OX-axUsE-g7aS1xdsJcUmuntq6po7h2wSmP_njhZan1F5pZECgt6OaOL",
       };
       var request = {
-        'notification': {'title': "Spaciko", 'body': msg},
+        'notification': {'isMe': true, 'body': msg},
         'data': {
           'click_action': 'FLUTTER_NOTIFICATION_CLICK',
           'type': 'COMMENT'
@@ -313,8 +261,9 @@ class _CommentScreenState extends State<CommentScreen> {
             padding: const EdgeInsets.only(top: 10),
             child: Column(
               children: [
-                Bubble(isMe: true,message: chatMessage[index]),
-                Bubble(isMe: false,message: chatMessage[index].split('').reversed.join(),)
+                Bubble(isMe: true,message: chatMessage[index].message),
+                // Bubble(isMe: true,message: chatMessage[index]),
+                // Bubble(isMe: false,message: chatMessage[index].split('').reversed.join(),)
               ],
             ),
           );
@@ -322,4 +271,11 @@ class _CommentScreenState extends State<CommentScreen> {
       ),
     );
   }
+}
+
+class ChatMessage{
+  // bool isMe;
+  String message;
+
+  ChatMessage({this.message});
 }
