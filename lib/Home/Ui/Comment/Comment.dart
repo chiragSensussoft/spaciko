@@ -35,8 +35,20 @@ class _CommentScreenState extends State<CommentScreen> {
   _configureFirebaseListeners() {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
+        print('onMessage${message['notification']['body']}');
         setState(() {
-          chatMessage.add(ChatMessage(message: message['notification']['body']));
+          final jsonResponse = json.decode(message['notification']['body']);
+          chatMessage.add(ChatMessage(message: jsonResponse['message'],isMe: jsonResponse['isMe']));
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            curve: Curves.easeIn,
+            duration: const Duration(milliseconds: 200),
+          );
+        });
+        print(chatMessage[0].message);
+        chatMessage.map((e)  {
+          print(e.message);
+          print(e.isMe);
         });
       },
       onLaunch: (Map<String, dynamic> message) async {
@@ -59,21 +71,20 @@ class _CommentScreenState extends State<CommentScreen> {
     final String title = notification['title'];
     final String body = notification['body'];
     String mMessage = data['Message'];
-    print("Title: $title, body: $body, message: ${mMessage}");
-    setState(() {
-      NotificationMessage msg = NotificationMessage(title, body, mMessage??'Hello');
-      messagesList.add(msg);
-    });
+    // print("Title: $title, body: $body, message: ${mMessage}");
+    // setState(() {
+    //   NotificationMessage msg = NotificationMessage(title, body, mMessage??'Hello');
+    //   messagesList.add(msg);
+    // });
   }
   @override
   void initState() {
     super.initState();
     temp.add('Hello');
-    messagesList = List<NotificationMessage>();
+    // messagesList = List<NotificationMessage>();
     chatMessage = List<ChatMessage>();
     _configureFirebaseListeners();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -192,9 +203,11 @@ class _CommentScreenState extends State<CommentScreen> {
                                         onTap: (){
                                           setState(() {
                                             sendFcmMessage(_controller.text);
-                                            chatMessage.add(ChatMessage(message: _controller.text));
-                                            print(chatMessage.map((e) => e.message));
-                                            temp.add(msg);
+                                            setState(() {
+                                              chatMessage.add(ChatMessage(message: _controller.text,isMe: true));
+                                            });
+                                            // print(chatMessage.map((e) => e.isMe));
+                                            // temp.add(msg);
                                             _controller.clear();
                                             scrollController.animateTo(
                                               scrollController.position.maxScrollExtent,
@@ -228,12 +241,12 @@ class _CommentScreenState extends State<CommentScreen> {
         "key=AAAAcbLNDRI:APA91bGkf5wnZQDLKWtnHUw_HtVhiyuRD9_GVTJfOKHKnWllGUe3uSsg6rfvuW1hX2uTMeeipeofW7KtoQs3OX-axUsE-g7aS1xdsJcUmuntq6po7h2wSmP_njhZan1F5pZECgt6OaOL",
       };
       var request = {
-        'notification': {'isMe': true, 'body': msg},
+        'notification': {'title':"Spaciko", 'body': {"message":msg,"isMe": false}},
         'data': {
           'click_action': 'FLUTTER_NOTIFICATION_CLICK',
           'type': 'COMMENT'
         },
-        'to': 'cyOXVZmdT5egWotf5zuBnq:APA91bHGmLORJx6PmGeZsUN41Z_tIgnq_jwxgqnXyoxNSlIY1-uqPAvoeH3nVs-LjuiTak4ZVwxsjlCa9jr1SxppPgSyY6TFMH6cqKEbsSDnfjeuZZnyl7qozRKfSp7oOLpH8zNa7a04'
+        'to': 'dnYKFXiGSU3SmmKSn4zQMI:APA91bG7mmzUG1aryBY5Pcn1Lt5TBZHPadX0k46WLXf_r09MQJpnwjJlf7tO_TmuHNsllv1e9ffMkXoLOIMRuq6K9bhy5uIH8aJn29XW--pQaVFxZCa2FecBozGNwHCbuxTsAaZuxZIv'
       };
       // oppo :- cyOXVZmdT5egWotf5zuBnq:APA91bHGmLORJx6PmGeZsUN41Z_tIgnq_jwxgqnXyoxNSlIY1-uqPAvoeH3nVs-LjuiTak4ZVwxsjlCa9jr1SxppPgSyY6TFMH6cqKEbsSDnfjeuZZnyl7qozRKfSp7oOLpH8zNa7a04
       var client = new Client();
@@ -261,7 +274,7 @@ class _CommentScreenState extends State<CommentScreen> {
             padding: const EdgeInsets.only(top: 10),
             child: Column(
               children: [
-                Bubble(isMe: true,message: chatMessage[index].message),
+                Bubble(isMe: chatMessage[index].isMe,message: chatMessage[index].message),
                 // Bubble(isMe: true,message: chatMessage[index]),
                 // Bubble(isMe: false,message: chatMessage[index].split('').reversed.join(),)
               ],
@@ -271,11 +284,12 @@ class _CommentScreenState extends State<CommentScreen> {
       ),
     );
   }
+  String jsonString = '{"notification":{"title":"Spaciko","body":{ "message":"msg","isMe":"false"}},"data":{"click_action":"FLUTTER_NOTIFICATION_CLICK","type":"COMMENT"},"to":"cVAUSr9irU5CkjIC8TUrXo:APA91bFyOKcHIwIs089epcJ6aTFRRKr651Uy-unKDW0dMtRa9mpdUO9CE3_R1u8mifidzoujBOzJEX0XJacUX3aHipDeiCjIfdj-4ch6sIsrpw46FFpIRzbpvk8X6J1UwCAlPM_qBU8M"}';
 }
 
 class ChatMessage{
-  // bool isMe;
+  bool isMe;
   String message;
 
-  ChatMessage({this.message});
+  ChatMessage({this.message,this.isMe});
 }
