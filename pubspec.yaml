@@ -32,7 +32,7 @@ dependencies:
 #  Firebase
   firebase_messaging: ^6.0.9
   flutter_local_notifications:
-  firebase_database: ^4.4.0
+  firebase_database:
   firebase_auth: ^0.16.0
   google_sign_in: ^4.4.4
 

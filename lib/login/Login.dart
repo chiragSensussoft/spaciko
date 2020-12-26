@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spaciko/RegisterActivity/DBProvider.dart';
@@ -42,53 +44,31 @@ class _MyLoginState extends State<MyLogin> {
   bool _checking = true;
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  final firebaseInstance = FirebaseDatabase.instance.reference();
+  DatabaseReference databaseReference1;
+  String dToken;
   @override
   void initState() {
     super.initState();
     _checkIfIsLogged();
     _checkIsLogin();
-    // _fCM();
+    getToken();
   }
-  String _homeScreenText = "Waiting for token...";
-  String _messageText = "Waiting for message...";
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  getToken() async {
+    String token = await _firebaseMessaging.getToken();
+    dToken = token;
+  }
 
-  //Firebase messaging
-  void _fCM(){
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        setState(() {
-          _messageText = "Push Messaging message: $message";
-        });
-        print("onMessage: $message");
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        setState(() {
-          _messageText = "Push Messaging message: $message";
-        });
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        setState(() {
-          _messageText = "Push Messaging message: $message";
-        });
-        print("onResume: $message");
-      },
-    );
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true));
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
-    _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      setState(() {
-        _homeScreenText = "Push Messaging token: $token";
-      });
-      print(_homeScreenText);
+  void createData(String userName,String token){
+    // databaseReference1.child('UserDetail');
+    databaseReference1 = firebaseInstance.child('userDetail').child(userName);
+    databaseReference1.set({
+      "deviceToken": token
     });
   }
+
   void _checkIsLogin()async{
     _sharedPreferences = await SharedPreferences.getInstance();
       if (_sharedPreferences.getBool('isLogin')== true) {
@@ -136,7 +116,7 @@ class _MyLoginState extends State<MyLogin> {
       var profile = json.decode(graphResponse.body);
       // Update And Insert Records
       update(profile['first_name'], profile['last_name'], profile['email'],'', 'FaceBook');
-
+      createData(profile['name'], dToken);
       print('Login Successful');
     } on FacebookAuthException catch (e) {
       print('${e.message}');
@@ -441,6 +421,7 @@ class _MyLoginState extends State<MyLogin> {
 
     if(user!=null){
       update(firstName, lastName, user.email, '', 'Google');
+      createData(user.displayName,dToken);
     }
     return 'signInWithGoogle succeeded: $user';
   }
