@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spaciko/Home/Ui/Profile/ApiCalling.dart';
+import 'package:spaciko/Home/Ui/Profile/Setting.dart';
 import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/widgets/Pelette.dart';
 
@@ -26,6 +28,7 @@ class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
 }
+
 Future<dynamic> myBackgroundHandler(Map<String, dynamic> message) {
   return _ProfileState()._showNotification(message);
 }
@@ -313,38 +316,38 @@ class _ProfileState extends State<Profile> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            showDialog(
-                                context: context,
-                                builder: (_){
-                                  return Dialog(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-                                    elevation: 16,
-                                    child: Container(
-                                      height: MediaQuery.of(context).size.height/3,
-                                      width: MediaQuery.of(context).size.width/2,
-                                      child:  ListView.builder(
-                                        itemCount: null == messagesList ? 0 : messagesList.length,
-                                        itemBuilder: (BuildContext context, int index) {
-                                          return Card(
-                                            child: Padding(
-                                              padding: EdgeInsets.all(10.0),
-                                              child: Text(
-                                                messagesList[index].message,
-                                                style: TextStyle(
-                                                  fontSize: 16.0,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                }
-                            );
+                            // showDialog(
+                            //     context: context,
+                            //     builder: (_){
+                            //       return Dialog(
+                            //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+                            //         elevation: 16,
+                            //         child: Container(
+                            //           height: MediaQuery.of(context).size.height/3,
+                            //           width: MediaQuery.of(context).size.width/2,
+                            //           child:  ListView.builder(
+                            //             itemCount: null == messagesList ? 0 : messagesList.length,
+                            //             itemBuilder: (BuildContext context, int index) {
+                            //               return Card(
+                            //                 child: Padding(
+                            //                   padding: EdgeInsets.all(10.0),
+                            //                   child: Text(
+                            //                     messagesList[index].message,
+                            //                     style: TextStyle(
+                            //                       fontSize: 16.0,
+                            //                       color: Colors.black,
+                            //                     ),
+                            //                   ),
+                            //                 ),
+                            //               );
+                            //             },
+                            //           ),
+                            //         ),
+                            //       );
+                            //     }
+                            // );
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ApiCalling()));
                           },
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => Setting())),
                           child: Container(margin: const EdgeInsets.only(top: 30),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
