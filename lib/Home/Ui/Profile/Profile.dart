@@ -8,6 +8,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spaciko/Home/Ui/Profile/ApiCalling.dart';
+import 'package:spaciko/Home/Ui/Profile/Services.dart';
 import 'package:spaciko/Home/Ui/Profile/Setting.dart';
 import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/widgets/Pelette.dart';
@@ -316,36 +317,6 @@ class _ProfileState extends State<Profile> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            // showDialog(
-                            //     context: context,
-                            //     builder: (_){
-                            //       return Dialog(
-                            //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-                            //         elevation: 16,
-                            //         child: Container(
-                            //           height: MediaQuery.of(context).size.height/3,
-                            //           width: MediaQuery.of(context).size.width/2,
-                            //           child:  ListView.builder(
-                            //             itemCount: null == messagesList ? 0 : messagesList.length,
-                            //             itemBuilder: (BuildContext context, int index) {
-                            //               return Card(
-                            //                 child: Padding(
-                            //                   padding: EdgeInsets.all(10.0),
-                            //                   child: Text(
-                            //                     messagesList[index].message,
-                            //                     style: TextStyle(
-                            //                       fontSize: 16.0,
-                            //                       color: Colors.black,
-                            //                     ),
-                            //                   ),
-                            //                 ),
-                            //               );
-                            //             },
-                            //           ),
-                            //         ),
-                            //       );
-                            //     }
-                            // );
                             Navigator.push(context, MaterialPageRoute(builder: (context) => ApiCalling()));
                           },
                           child: Container(margin: const EdgeInsets.only(top: 30),
@@ -369,25 +340,32 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                         ),
-                        Container(margin: const EdgeInsets.only(top: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(margin:const EdgeInsets.only(left: 15),
-                                    child: Image.asset('image/ic_help.png',height: 30,width: 30,),
-                                  ),
-                                  Container(margin: const EdgeInsets.only(left: 20),
-                                    child: Text('Help and Support',style: TextStyle(color: Colors.black,fontSize: 16),),
-                                  )
-                                ],
-                              ),
-                              Container(margin:const EdgeInsets.only(right: 15),
-                                child: Image.asset('image/ic_rigthtback_green.png',height: 22,width: 22,),
-                              )
-                            ],
+                        GestureDetector(
+                          child: Container(margin: const EdgeInsets.only(top: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(margin:const EdgeInsets.only(left: 15),
+                                      child: Image.asset('image/ic_help.png',height: 30,width: 30,),
+                                    ),
+                                    Container(margin: const EdgeInsets.only(left: 20),
+                                      child: Text('Help and Support',style: TextStyle(color: Colors.black,fontSize: 16),),
+                                    )
+                                  ],
+                                ),
+                                Container(margin:const EdgeInsets.only(right: 15),
+                                  child: Image.asset('image/ic_rigthtback_green.png',height: 22,width: 22,),
+                                )
+                              ],
+                            ),
                           ),
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (_) => Services()
+                            ));
+                          },
                         ),
                         Container(margin: const EdgeInsets.only(top: 20),
                           child: Row(
