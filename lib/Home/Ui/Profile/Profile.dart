@@ -108,9 +108,9 @@ class _ProfileState extends State<Profile> {
     final String title = notification['title'];
     final String body = notification['body'];
     String mMessage = data['Message'];
-    print("Title: $title, body: $body, message: ${mMessage??'Hello'}");
+    print("Title: $title, body: $body, message: $mMessage");
     setState(() {
-      NotificationMessage msg = NotificationMessage(title, body, mMessage??'Hello');
+      NotificationMessage msg = NotificationMessage(title, body, body);
       messagesList.add(msg);
     });
   }
@@ -223,6 +223,7 @@ class _ProfileState extends State<Profile> {
                           builder: (_){
                             return Dialog(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+                              backgroundColor: AppColors.colorGreenTrans,
                               elevation: 16,
                               child: Container(
                                 height: MediaQuery.of(context).size.height/3,
@@ -230,14 +231,18 @@ class _ProfileState extends State<Profile> {
                                 child:  ListView.builder(
                                   itemCount: null == messagesList ? 0 : messagesList.length,
                                   itemBuilder: (BuildContext context, int index) {
-                                    return Card(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(10.0),
-                                        child: Text(
-                                          messagesList[index].message,
-                                          style: TextStyle(
-                                            fontSize: 16.0,
-                                            color: Colors.black,
+                                    return Container(
+                                      margin: const EdgeInsets.only(top: 20,left: 10,right: 10),
+                                      child: Card(
+                                        color: AppColors.colorWhite,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(10.0),
+                                          child: Text(
+                                            messagesList[index].message,
+                                            style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.black,
+                                            ),
                                           ),
                                         ),
                                       ),
