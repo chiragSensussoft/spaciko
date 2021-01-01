@@ -7,11 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:spaciko/Home/Ui/Profile/ApiCalling.dart';
-import 'package:spaciko/Home/Ui/Profile/Services.dart';
-import 'package:spaciko/Home/Ui/Profile/Setting.dart';
+import 'package:spaciko/Home/Ui/Profile/ApiCalling/ApiCalling.dart';
+import 'package:spaciko/Home/Ui/Profile/ReminderNotification/ReminderNotification.dart';
+import 'package:spaciko/Home/Ui/Profile/PlatformServices/Services.dart';
+import 'package:spaciko/Home/Ui/Profile/Setting/Setting.dart';
 import 'package:spaciko/login/Login.dart';
 import 'package:spaciko/widgets/Pelette.dart';
+
+import 'ContactUs/Contact.dart';
 
 class MyScreen extends StatelessWidget {
   @override
@@ -372,24 +375,31 @@ class _ProfileState extends State<Profile> {
                             ));
                           },
                         ),
-                        Container(margin: const EdgeInsets.only(top: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(margin:const EdgeInsets.only(left: 15),
-                                    child: Image.asset('image/ic_listing.png',height: 30,width: 30,),
-                                  ),
-                                  Container(margin: const EdgeInsets.only(left: 20),
-                                    child: Text('My Listing',style: TextStyle(color: Colors.black,fontSize: 16),),
-                                  )
-                                ],
-                              ),
-                              Container(margin:const EdgeInsets.only(right: 15),
-                                child: Image.asset('image/ic_rigthtback_green.png',height: 22,width: 22,),
-                              )
-                            ],
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (_) => ReminderNotification()
+                            ));
+                          },
+                          child: Container(margin: const EdgeInsets.only(top: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(margin:const EdgeInsets.only(left: 15),
+                                      child: Image.asset('image/ic_listing.png',height: 30,width: 30,),
+                                    ),
+                                    Container(margin: const EdgeInsets.only(left: 20),
+                                      child: Text('My Listing',style: TextStyle(color: Colors.black,fontSize: 16),),
+                                    )
+                                  ],
+                                ),
+                                Container(margin:const EdgeInsets.only(right: 15),
+                                  child: Image.asset('image/ic_rigthtback_green.png',height: 22,width: 22,),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                         Container(margin: const EdgeInsets.only(top: 20),
@@ -432,24 +442,31 @@ class _ProfileState extends State<Profile> {
                             ],
                           ),
                         ),
-                        Container(margin: const EdgeInsets.only(top: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(margin:const EdgeInsets.only(left: 15),
-                                    child: Image.asset('image/ic_contect.png',height: 30,width: 30,),
-                                  ),
-                                  Container(margin: const EdgeInsets.only(left: 20),
-                                    child: Text('Contact Us',style: TextStyle(color: Colors.black,fontSize: 16),),
-                                  )
-                                ],
-                              ),
-                              Container(margin:const EdgeInsets.only(right: 15),
-                                child: Image.asset('image/ic_rigthtback_green.png',height: 22,width: 22,),
-                              )
-                            ],
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (_) => ContactReader()
+                            ));
+                          },
+                          child: Container(margin: const EdgeInsets.only(top: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(margin:const EdgeInsets.only(left: 15),
+                                      child: Image.asset('image/ic_contect.png',height: 30,width: 30,),
+                                    ),
+                                    Container(margin: const EdgeInsets.only(left: 20),
+                                      child: Text('Contact Us',style: TextStyle(color: Colors.black,fontSize: 16),),
+                                    )
+                                  ],
+                                ),
+                                Container(margin:const EdgeInsets.only(right: 15),
+                                  child: Image.asset('image/ic_rigthtback_green.png',height: 22,width: 22,),
+                                )
+                              ],
+                            ),
                           ),
                         )
                       ],
