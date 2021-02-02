@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:spaciko/Home/Ui/Calender/utils/date_models.dart';
 import 'package:spaciko/Home/Ui/Calender/utils/date_utils.dart';
 
+
 class VerticalCalendar extends StatefulWidget {
   final DateTime minDate;
   final DateTime maxDate;
@@ -41,7 +42,7 @@ class _VerticalCalendarState extends State<VerticalCalendar> {
   @override
   void initState() {
     super.initState();
-    _months = DateUtils.extractWeeks(widget.minDate, widget.maxDate);
+    _months = CustomDateUtils.extractWeeks(widget.minDate, widget.maxDate);
     _minDate = widget.minDate.removeTime();
     _maxDate = widget.maxDate.removeTime();
     rangeMinDate = widget.initialMinDate;
@@ -54,7 +55,7 @@ class _VerticalCalendarState extends State<VerticalCalendar> {
 
     if (oldWidget.minDate != widget.minDate ||
         oldWidget.maxDate != widget.maxDate) {
-      _months = DateUtils.extractWeeks(widget.minDate, widget.maxDate);
+      _months = CustomDateUtils.extractWeeks(widget.minDate, widget.maxDate);
       _minDate = widget.minDate.removeTime();
       _maxDate = widget.maxDate.removeTime();
     }

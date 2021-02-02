@@ -4,7 +4,7 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.4.0)
   - AppAuth/Core (1.4.0)
   - AppAuth/ExternalUserAgent (1.4.0)
-  - contacts_service (0.2.1):
+  - contacts_service (0.2.2):
     - Flutter
   - FBSDKCoreKit (8.2.0):
     - FBSDKCoreKit/Basics (= 8.2.0)
@@ -271,7 +271,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
-  contacts_service: d212985196c101372bb55c42f41dae7be59ab811
+  contacts_service: 849e1f84281804c8bfbec1b4c3eedcb23c5d3eca
   FBSDKCoreKit: 4afd6ff53d8133a433dbcda44451c9498f8c6ce4
   FBSDKLoginKit: 7181765f2524d7ebf82d9629066c8e6caafc99d0
   Firebase: 8db6f2d1b2c5e2984efba4949a145875a8f65fe5

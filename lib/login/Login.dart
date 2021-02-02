@@ -368,7 +368,8 @@ class _MyLoginState extends State<MyLogin> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn(
-      scopes: ["email", "https://www.googleapis.com/auth/user.birthday.read", "https://www.googleapis.com/auth/userinfo.profile"]
+      scopes: ["email",
+      "https://www.googleapis.com/auth/calendar"]
   );
 
   static Map<String, dynamic> parseJwt(String token) {
@@ -404,6 +405,9 @@ class _MyLoginState extends State<MyLogin> {
       idToken: googleSignInAuthentication.idToken,
     );
 
+    print("Access Token ==> ${googleSignInAuthentication.accessToken}");
+    print("Id Token ==> ${googleSignInAuthentication.idToken}");
+
     final AuthResult authResult = await _auth.signInWithCredential(credential);
     final FirebaseUser user = authResult.user;
 
@@ -422,6 +426,7 @@ class _MyLoginState extends State<MyLogin> {
     if(user!=null){
       update(firstName, lastName, user.email, '', 'Google');
       createData(user.displayName,dToken);
+      print(googleSignInAuthentication.accessToken);
     }
     return 'signInWithGoogle succeeded: $user';
   }

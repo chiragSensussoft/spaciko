@@ -157,12 +157,12 @@ class _ContactReaderState extends State<ContactReader> {
                           Contact c = _contacts?.elementAt(index);
                           return ListTile(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (BuildContext context) => ContactDetailsPage(
-                                    c,
-                                    onContactDeviceSave:
-                                    contactOnDeviceHasBeenUpdated,
-                                  )));
+                              // Navigator.of(context).push(MaterialPageRoute(
+                              //     builder: (BuildContext context) => ContactDetailsPage(
+                              //       c,
+                              //       onContactDeviceSave:
+                              //       contactOnDeviceHasBeenUpdated,
+                              //     )));
                             },
                             leading: (c.avatar != null && c.avatar.length > 0)
                                 ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
